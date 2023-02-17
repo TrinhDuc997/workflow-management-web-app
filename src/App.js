@@ -1,23 +1,76 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
+import Main from "./containers/Main";
+import Login from "./components/authentication/Login";
+// import { ThemeProvider } from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { getDesignTokens } from "./utils/theme";
+import theme from "./utils/theme";
+
+const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
+const PrivateRoute = ({ children }) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    // Render component if token is valid
+    return children;
+  }
+  // Redirect to login page if user is not authenticated
+  return <Navigate to="/login" />;
+};
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <PrivateRoute>
+        <Main ColorModeContext={ColorModeContext} />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/login",
+    element: (
+      <ThemeProvider theme={theme}>
+        <Login />
+      </ThemeProvider>
+    ),
+  },
+]);
 
 function App() {
+  const [mode, setMode] = React.useState(
+    localStorage.getItem("prevMode") || "light"
+  );
+  const colorMode = React.useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => {
+          localStorage.setItem(
+            "prevMode",
+            prevMode === "light" ? "dark" : "light"
+          );
+          return prevMode === "light" ? "dark" : "light";
+        });
+      },
+    }),
+    []
+  );
+
+  const themeMode = React.useMemo(
+    () => createTheme(getDesignTokens(mode)),
+    [mode]
+  );
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ColorModeContext.Provider value={colorMode}>
+        <ThemeProvider theme={themeMode}>
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </ColorModeContext.Provider>
     </div>
   );
 }
