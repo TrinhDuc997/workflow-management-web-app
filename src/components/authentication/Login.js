@@ -18,6 +18,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { authAPI } from "../../api/index.js";
 import { useNavigate } from "react-router-dom";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 function Login() {
   // handle show password --- START
@@ -37,13 +38,16 @@ function Login() {
   //handle Login --- START
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [checkLogin, setCheckLogin] = useState(false);
   const navigate = useNavigate();
   async function handleSubmit(userName, password, navigate) {
+    setLoading(true);
     const loginData = await authAPI.login({ userName, password });
     const { token = "", message = "" } = loginData || {};
     localStorage.setItem("token", token);
     localStorage.setItem("dataUser", JSON.stringify(loginData));
+    setLoading(false);
     if (!!token) {
       setCheckLogin(false);
       return navigate("/");
@@ -174,7 +178,7 @@ function Login() {
                 </FormControl>
               </Grid>
               <Grid item>
-                <Button
+                {/*<Button
                   sx={{ width: "25ch" }}
                   variant="outlined"
                   onClick={() => {
@@ -182,7 +186,17 @@ function Login() {
                   }}
                 >
                   Đăng Nhập
-                </Button>
+                </Button>*/}
+                <LoadingButton
+                  loading={loading}
+                  onClick={() => {
+                    handleSubmit(userName, password, navigate);
+                  }}
+                  loadingIndicator="Loading…"
+                  variant="outlined"
+                >
+                  Đăng Nhập
+                </LoadingButton>
               </Grid>
               {checkLogin && (
                 <Grid item>
