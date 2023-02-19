@@ -6,6 +6,7 @@ import { useTheme } from "@mui/material/styles";
 // import Brightness4Icon from "@mui/icons-material/Brightness4";
 // import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Hearder from "../components/main/Hearder";
+import SpaceLeft from "../components/main/SpaceLeft";
 function Main(props) {
   const { ColorModeContext } = props;
   const theme = useTheme();
@@ -28,7 +29,7 @@ function Main(props) {
             flexWrap: "nowrap",
             justifyContent: "space-between",
             alignItems: "center",
-            bgcolor: "background.second",
+            bgcolor: "background.default",
           }}
           container
           className="Header"
@@ -43,10 +44,12 @@ function Main(props) {
                 width: "300px",
                 borderRight: "0.5px solid",
                 borderColor: "divider",
-                bgcolor: "background.second",
+                bgcolor: "background.default",
               }}
               className="SpaceLeft"
-            ></Grid>
+            >
+              <SpaceLeft />
+            </Grid>
             <Grid
               item
               className="SpaceRight"

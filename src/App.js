@@ -10,6 +10,7 @@ import Login from "./components/authentication/Login";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { getDesignTokens } from "./utils/theme";
 import theme from "./utils/theme";
+import { GlobalStyles } from "@mui/styled-engine";
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 const PrivateRoute = ({ children }) => {
@@ -64,6 +65,7 @@ function App() {
     () => createTheme(getDesignTokens(mode)),
     [mode]
   );
+  console.log("createTheme(getDesignTokens(mode):", getDesignTokens(mode));
   return (
     <div className="App">
       <ColorModeContext.Provider value={colorMode}>

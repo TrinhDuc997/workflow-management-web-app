@@ -18,7 +18,11 @@ function Hearder(props) {
           width={45}
           height={40}
           alt="logo"
-          src="/logo2.png"
+          src={
+            localStorage.getItem("prevMode") === "dark"
+              ? "/logo2.png"
+              : "/logo.png"
+          }
         />
         <Typography
           variant="h4"
