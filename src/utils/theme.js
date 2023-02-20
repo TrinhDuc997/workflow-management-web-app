@@ -5,8 +5,8 @@ import { createTheme } from "@mui/material/styles";
 
 // Constant Color --- START
 
-const scrollbarBackgroundColorDarkMode = "#003872";
-const scrollbarBackgroundColorLightMode = green[200];
+export const scrollbarBackgroundColorDarkMode = "#003872";
+export const scrollbarBackgroundColorLightMode = green[200];
 // Constant Color --- END
 
 export const getDesignTokens = (mode) => ({
@@ -24,10 +24,11 @@ export const getDesignTokens = (mode) => ({
             second: green[200],
             paper: grey[200],
             hover: green[50],
+            scrollColor: scrollbarBackgroundColorLightMode,
           },
           text: {
-            primary: green[800],
-            secondary: green[600],
+            primary: green[900],
+            secondary: green[400],
           },
         }
       : {
@@ -41,10 +42,11 @@ export const getDesignTokens = (mode) => ({
             second: grey[800],
             paper: "#011e3c",
             hover: "#2196f352",
+            scrollColor: scrollbarBackgroundColorDarkMode,
           },
           text: {
             primary: grey[100],
-            secondary: green[300],
+            secondary: grey[400],
           },
         }),
   },
@@ -101,6 +103,13 @@ export const getDesignTokens = (mode) => ({
               },
             },
           },
+          MuiPaper: {
+            styleOverrides: {
+              root: {
+                borderRadius: "10px",
+              },
+            },
+          },
         }
       : {
           MuiSvgIcon: {
@@ -150,6 +159,13 @@ export const getDesignTokens = (mode) => ({
                   backgroundColor: scrollbarBackgroundColorDarkMode,
                   borderRadius: "10px",
                 },
+              },
+            },
+          },
+          MuiPaper: {
+            styleOverrides: {
+              root: {
+                borderRadius: "10px",
               },
             },
           },

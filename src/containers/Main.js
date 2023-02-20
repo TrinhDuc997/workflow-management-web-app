@@ -7,6 +7,7 @@ import { useTheme } from "@mui/material/styles";
 // import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Hearder from "../components/main/Hearder";
 import SpaceLeft from "../components/main/SpaceLeft";
+import MainSpace from "../components/main/mainspace/MainSpace";
 function Main(props) {
   const { ColorModeContext } = props;
   const theme = useTheme();
@@ -37,7 +38,7 @@ function Main(props) {
           <Hearder theme={theme} colorMode={colorMode} />
         </Grid>
         <Grid item container height={"calc(100vh - 4rem)"}>
-          <Grid container spacing={1}>
+          <Grid container spacing={1} height={"100%"}>
             <Grid
               item
               sx={{
@@ -45,6 +46,7 @@ function Main(props) {
                 borderRight: "0.5px solid",
                 borderColor: "divider",
                 bgcolor: "background.default",
+                height: "100%",
               }}
               className="SpaceLeft"
             >
@@ -52,12 +54,15 @@ function Main(props) {
             </Grid>
             <Grid
               item
-              className="SpaceRight"
+              className="SpaceMain"
               sx={{
                 background: "background.gradient",
                 width: "calc(100% - 300px)",
+                height: "100%",
               }}
-            ></Grid>
+            >
+              <MainSpace />
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
