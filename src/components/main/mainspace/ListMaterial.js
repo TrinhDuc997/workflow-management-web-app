@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useImperativeHandle } from "react";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import { ButtonBase } from "@mui/material";
 import { Editor } from "react-draft-wysiwyg";
@@ -42,32 +42,52 @@ const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
   );
 });
 
-function ListMaterial() {
+const ListMaterial = React.forwardRef((props, ref) => {
   const [expanded, setExpanded] = React.useState(false);
-  const [editorState, seteditorState] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   const [materialLists, setMaterialLists] = React.useState([]);
-  const [unitPrice, setUnitPrice] = React.useState(0);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-
-  const handleEditorStateChange = (value) => {
-    seteditorState(value);
-  };
   const handleAddMaterial = (params) => {
     setMaterialLists([...materialLists, params]);
   };
-
+  const handleRemoveMateial = (id) => {
+    let newMaterial = [];
+    materialLists.forEach((i) => {
+      if (i.id !== id) {
+        newMaterial.push(i);
+      }
+    });
+    setMaterialLists(newMaterial);
+  };
+  const handleEditMaterial = (params) => {
+    let newMaterial = [];
+    materialLists.forEach((i) => {
+      if (i.id === params.id) {
+        newMaterial.push(params);
+      } else {
+        newMaterial.push(i);
+      }
+    });
+    setMaterialLists(newMaterial);
+  };
+  useImperativeHandle(
+    ref,
+    () => ({
+      getMaterialList: () => {
+        return materialLists;
+      },
+      setMaterialLists,
+    }),
+    [materialLists]
+  );
   return (
     <Box sx={{ ml: "1rem", mr: "1rem", mb: "1rem" }}>
       <ButtonBase
         sx={{
           p: "5px",
-
+          borderRadius: "10px",
           "&:hover": {
             backgroundColor: "background.second",
           },
@@ -88,11 +108,19 @@ function ListMaterial() {
         <AddMaterialComponent handleAddMaterial={handleAddMaterial} />
         <Divider sx={{ mb: "8px" }} />
         {materialLists.map((item, index) => {
-          return <MaterialComponent key={index} dataMaterial={item} />;
+          return (
+            <MaterialComponent
+              key={item.id}
+              index={index}
+              handleRemoveMateial={handleRemoveMateial}
+              handleEditMaterial={handleEditMaterial}
+              dataMaterial={item}
+            />
+          );
         })}
       </Collapse>
     </Box>
   );
-}
+});
 
 export default ListMaterial;

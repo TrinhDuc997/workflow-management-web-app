@@ -110,6 +110,15 @@ export const getDesignTokens = (mode) => ({
               },
             },
           },
+          MuiButtonBase: {
+            styleOverrides: {
+              root: {
+                "&.Mui-focusVisible": {
+                  backgroundColor: "#2196f352",
+                },
+              },
+            },
+          },
         }
       : {
           MuiSvgIcon: {
@@ -169,6 +178,15 @@ export const getDesignTokens = (mode) => ({
               },
             },
           },
+          MuiButtonBase: {
+            styleOverrides: {
+              root: {
+                "&.Mui-focusVisible": {
+                  backgroundColor: "#2196f352",
+                },
+              },
+            },
+          },
         }),
   },
 });
@@ -185,6 +203,22 @@ const theme = createTheme({
       light: red[200],
       main: red[400],
       dark: red[600],
+    },
+  },
+  components: {
+    MuiButtonBase: {
+      styleOverrides: {
+        root: {
+          "&.Mui-focusVisible": {
+            backgroundColor: "red",
+          },
+        },
+      },
+    },
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: {},
+      },
     },
   },
 });

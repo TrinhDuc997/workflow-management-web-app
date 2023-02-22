@@ -15,8 +15,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import DisabledByDefaultRoundedIcon from "@mui/icons-material/DisabledByDefaultRounded";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
-const ViewMaterial = ({ dataMaterial = {}, setEditMode }) => {
-  const { materialName, quantity, unitPrice } = dataMaterial;
+const ViewMaterial = ({
+  dataMaterial = {},
+  setEditMode,
+  handleRemoveMateial,
+}) => {
+  const { materialName, quantity, unitPrice, id } = dataMaterial;
   return (
     <CardContent sx={{ p: "0px" }}>
       <Paper>
@@ -40,7 +44,7 @@ const ViewMaterial = ({ dataMaterial = {}, setEditMode }) => {
             </Grid>
             <Grid item>
               {" "}
-              <Typography variant="">Đơn Giá: {unitPrice}</Typography>{" "}
+              <Typography variant="">Đơn Giá: {unitPrice} VND</Typography>{" "}
             </Grid>
           </Grid>
           <Grid
@@ -74,7 +78,9 @@ const ViewMaterial = ({ dataMaterial = {}, setEditMode }) => {
                   height: "24px",
                   borderRadius: "5px",
                 }}
-                onClick={() => {}}
+                onClick={() => {
+                  handleRemoveMateial(id);
+                }}
               >
                 <DisabledByDefaultRoundedIcon
                   sx={{
@@ -100,7 +106,9 @@ const EditMaterial = (props) => {
     setMaterialName,
     setQuantity,
     setUnitPrice,
-    setEditMode,
+    id,
+    handleRemoveMateial,
+    handleEditChange,
   } = props;
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -159,7 +167,7 @@ const EditMaterial = (props) => {
             mb: "10px",
           }}
           onClick={() => {
-            setEditMode(false);
+            handleEditChange();
           }}
         >
           <CheckBoxIcon
@@ -176,7 +184,9 @@ const EditMaterial = (props) => {
             height: "24px",
             mt: "10px",
           }}
-          onClick={() => {}}
+          onClick={() => {
+            handleRemoveMateial(id);
+          }}
         >
           <DisabledByDefaultRoundedIcon
             sx={{
@@ -215,29 +225,42 @@ const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
 });
 
 function MaterialComponent(props) {
-  const { dataMaterial = {}, index } = props;
+  const { dataMaterial = {}, handleRemoveMateial, handleEditMaterial } = props;
   const [materialName, setMaterialName] = React.useState(
     dataMaterial.materialName || ""
   );
   const [quantity, setQuantity] = React.useState(dataMaterial.quantity || 0);
   const [unitPrice, setUnitPrice] = React.useState(dataMaterial.unitPrice || 0);
   const [editMode, setEditMode] = React.useState(false);
+
+  const handleEditChange = () => {
+    setEditMode(false);
+    handleEditMaterial({ ...dataMaterial, quantity, unitPrice, materialName });
+  };
   return (
     <Box marginLeft={"1rem"}>
       {editMode ? (
         <EditMaterial
           quantity={quantity}
+          id={dataMaterial.id || ""}
           setQuantity={setQuantity}
           unitPrice={unitPrice}
           setUnitPrice={setUnitPrice}
           materialName={materialName}
           setMaterialName={setMaterialName}
-          setEditMode={setEditMode}
+          handleRemoveMateial={handleRemoveMateial}
+          handleEditChange={handleEditChange}
         />
       ) : (
         <ViewMaterial
-          dataMaterial={{ materialName, quantity, unitPrice }}
+          dataMaterial={{
+            materialName,
+            quantity,
+            unitPrice,
+            id: dataMaterial.id || "",
+          }}
           setEditMode={setEditMode}
+          handleRemoveMateial={handleRemoveMateial}
         />
       )}
     </Box>

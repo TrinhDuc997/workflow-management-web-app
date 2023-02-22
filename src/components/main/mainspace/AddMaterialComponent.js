@@ -1,5 +1,5 @@
 import { ButtonBase, CardContent, TextField } from "@mui/material";
-import React from "react";
+import React, { useRef } from "react";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { Box } from "@mui/system";
 import { NumericFormat } from "react-number-format";
@@ -34,13 +34,22 @@ function AddMaterialComponent(props) {
   const [quantity, setQuantity] = React.useState(1);
   const [unitPrice, setUnitPrice] = React.useState(0);
   const [isError, setIsError] = React.useState(false);
-
+  const refTextFieldMaterialName = useRef();
   const handleCheckMandatory = () => {
     if (materialName === "") {
       setIsError(true);
     } else {
       setIsError(false);
-      handleAddMaterial({ materialName, quantity, unitPrice });
+      handleAddMaterial({ id: Date.now(), materialName, quantity, unitPrice });
+      setmaterialName("");
+      setQuantity(1);
+      setUnitPrice("");
+      console.log(
+        "🚀 ~ file: AddMaterialComponent.js:48 ~ handleCheckMandatory ~ refTextFieldMaterialName",
+        refTextFieldMaterialName
+      );
+
+      refTextFieldMaterialName.current.focus();
     }
   };
   const { handleAddMaterial } = props;
@@ -55,6 +64,9 @@ function AddMaterialComponent(props) {
           value={materialName}
           sx={{ width: "100%", pb: "2px" }}
           size="small"
+          InputProps={{
+            inputRef: refTextFieldMaterialName,
+          }}
           error={isError}
           onChange={(e) => {
             setIsError(false);
@@ -89,6 +101,11 @@ function AddMaterialComponent(props) {
               inputProps: {
                 unit: "  VND",
               },
+            }}
+            onKeyDown={(e) => {
+              if (e.code === "Enter") {
+                handleCheckMandatory();
+              }
             }}
             variant="standard"
             size="small"

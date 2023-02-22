@@ -3,15 +3,17 @@ import { Box } from "@mui/system";
 import React from "react";
 import CreateTask from "./CreateTask";
 import ListHeader from "./ListHeader";
+import TasksList from "./TasksList";
 
-function MainSpace() {
+function MainSpace(props) {
+  const { tasksList = [], handleAddTask } = props;
   return (
     <Stack
       direction="row"
       divider={<Divider orientation="vertical" flexItem />}
       justifyContent="space-around"
       alignItems="stretch"
-      height={"100%"}
+      height={"calc(100% - 35px)"}
     >
       <Paper sx={{ width: "30%", height: "100%" }}>
         <ListHeader title="Cần Làm" />
@@ -31,7 +33,8 @@ function MainSpace() {
             },
           }}
         >
-          <CreateTask />
+          <TasksList tasksList={tasksList} />
+          <CreateTask handleAddTask={handleAddTask} />
         </Box>
       </Paper>
       <Paper sx={{ width: "30%" }}>

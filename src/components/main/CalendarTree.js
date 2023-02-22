@@ -16,8 +16,8 @@ function generateDataCalendar(year) {
   for (let i = 0; i < 365; i++) {
     const date = startOfYear.clone().add(i, "days");
     const y = date.year();
-    const m = date.month() + 1;
-    const d = date.date();
+    const m = (date.month() + 1).toString().padStart(2, "0"); //định dạng tháng thành 2 chữ số
+    const d = date.date().toString().padStart(2, "0");
 
     if (!daysOfYear[y]) {
       daysOfYear[y] = {};
@@ -32,14 +32,15 @@ function generateDataCalendar(year) {
   return daysOfYear;
 }
 
-function CalendarTree() {
-  const [year, setYear] = React.useState(moment().format("yyyy"));
+function CalendarTree(props) {
+  const { handleChangeDate } = props;
+  const [year, setYear] = React.useState(moment().format("YYYY"));
   const daysOfYear = generateDataCalendar(year);
   const currentDay = moment().format("DD");
-  const currentMonth = moment().format("M");
-  const [expanded, setExpanded] = React.useState([`Thang${currentMonth}`]);
+  const currentMonth = moment().format("MM");
+  const [expanded, setExpanded] = React.useState([`${year}${currentMonth}`]);
   const [selected, setSelected] = React.useState([
-    `N${currentDay}T${currentMonth}`,
+    `${year}${currentMonth}${currentDay}`,
   ]);
   const handleToggle = (event, nodeIds) => {
     setExpanded(nodeIds);
@@ -47,9 +48,23 @@ function CalendarTree() {
 
   const handleSelect = (event, nodeIds) => {
     setSelected(nodeIds);
+    handleChangeDate(nodeIds[0]);
   };
 
-  const monthNumber = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const monthNumber = [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+  ];
   const monthOfYear = daysOfYear[year];
   return (
     <Box sx={{ flexGrow: 1, maxWidth: 400, overflowY: "auto" }}>
@@ -113,7 +128,7 @@ function CalendarTree() {
           return (
             <TreeItem
               key={`Thang${item}`}
-              nodeId={`Thang${item}`}
+              nodeId={`${year}${item}`}
               label={
                 <Typography
                   variant="subtitle1"
@@ -129,7 +144,7 @@ function CalendarTree() {
                 return (
                   <TreeItem
                     key={`N${subItem}T${item}`}
-                    nodeId={`N${subItem}T${item}`}
+                    nodeId={`${year}${item}${subItem}`}
                     label={`Ngày ${subItem}`}
                     sx={{
                       ml: "5px",
