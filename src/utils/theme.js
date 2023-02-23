@@ -107,6 +107,16 @@ export const getDesignTokens = (mode) => ({
             styleOverrides: {
               root: {
                 borderRadius: "10px",
+                "&::-webkit-scrollbar": {
+                  backgroundColor: "background.default",
+                  position: "absolute",
+                  borderRadius: "10px",
+                  width: "10px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: scrollbarBackgroundColorLightMode,
+                  borderRadius: "10px",
+                },
               },
             },
           },
@@ -175,6 +185,16 @@ export const getDesignTokens = (mode) => ({
             styleOverrides: {
               root: {
                 borderRadius: "10px",
+                "&::-webkit-scrollbar": {
+                  backgroundColor: "background.default",
+                  position: "absolute",
+                  borderRadius: "10px",
+                  width: "10px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: scrollbarBackgroundColorDarkMode,
+                  borderRadius: "10px",
+                },
               },
             },
           },

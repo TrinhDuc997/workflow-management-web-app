@@ -114,7 +114,7 @@ const EditMaterial = (props) => {
   } = props;
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <CardContent>
+      <CardContent sx={{ width: "100%" }}>
         <TextField
           id="outlined-multiline-static"
           label="Tên Nguyên Vật Liệu"
@@ -141,6 +141,7 @@ const EditMaterial = (props) => {
             }}
             variant="standard"
             size="small"
+            sx={{ width: "45%" }}
           />
           <TextField
             label="Đơn giá"
@@ -158,6 +159,7 @@ const EditMaterial = (props) => {
             }}
             variant="standard"
             size="small"
+            sx={{ width: "45%" }}
           />
         </Box>
       </CardContent>
@@ -226,7 +228,7 @@ const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
   );
 });
 
-function MaterialComponent(props) {
+function UpdateMaterialComponent(props) {
   const { dataMaterial = {}, handleRemoveMateial, handleEditMaterial } = props;
   const [materialName, setMaterialName] = React.useState(
     dataMaterial.materialName || ""
@@ -244,7 +246,7 @@ function MaterialComponent(props) {
       {editMode ? (
         <EditMaterial
           quantity={quantity}
-          id={dataMaterial.id || ""}
+          id={dataMaterial._id || ""}
           setQuantity={setQuantity}
           unitPrice={unitPrice}
           setUnitPrice={setUnitPrice}
@@ -259,7 +261,7 @@ function MaterialComponent(props) {
             materialName,
             quantity,
             unitPrice,
-            id: dataMaterial.id || "",
+            id: dataMaterial._id || "",
           }}
           setEditMode={setEditMode}
           handleRemoveMateial={handleRemoveMateial}
@@ -269,4 +271,4 @@ function MaterialComponent(props) {
   );
 }
 
-export default MaterialComponent;
+export default UpdateMaterialComponent;

@@ -7,6 +7,9 @@ import TasksList from "./TasksList";
 
 function MainSpace(props) {
   const { tasksList = [], handleAddTask } = props;
+  const ListTodo = tasksList.filter((i) => i.status === "todo");
+  const ListDoing = tasksList.filter((i) => i.status === "doing");
+  const ListDone = tasksList.filter((i) => i.status === "done");
   return (
     <Stack
       direction="row"
@@ -33,15 +36,17 @@ function MainSpace(props) {
             },
           }}
         >
-          <TasksList tasksList={tasksList} />
+          <TasksList tasksList={ListTodo} />
           <CreateTask handleAddTask={handleAddTask} />
         </Box>
       </Paper>
       <Paper sx={{ width: "30%" }}>
         <ListHeader title="Đang Làm" />
+        <TasksList tasksList={ListDoing} />
       </Paper>
       <Paper sx={{ width: "30%" }}>
         <ListHeader title="Làm Xong" />
+        <TasksList tasksList={ListDone} />
       </Paper>
     </Stack>
   );

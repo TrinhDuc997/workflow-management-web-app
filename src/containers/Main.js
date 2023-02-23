@@ -9,8 +9,9 @@ import Hearder from "../components/main/Hearder";
 import SpaceLeft from "../components/main/SpaceLeft";
 import MainSpace from "../components/main/mainspace/MainSpace";
 import moment from "moment";
-import { tasksAPI } from "../api";
+import { tasksAPI, usersAPI } from "../api";
 import { MainContext } from "../contexts";
+import LoadingComponent from "../components/common/LoadingComponent";
 
 function Main(props) {
   const { ColorModeContext } = props;
@@ -19,6 +20,8 @@ function Main(props) {
   const [selectedDate, setSelectedDate] = useState(moment().format("YYYYMMDD"));
   const [tasksList, setTasksList] = useState();
   const dataFetchedRef = useRef(false);
+  const [isLoading, setLoading] = useState(false);
+  const [listUser, setListUsers] = React.useState([]);
 
   // componentDidMount - START
   React.useEffect(() => {
@@ -32,6 +35,12 @@ function Main(props) {
       setTasksList((data || {}).tasksList || []);
     };
     fetchListTask().catch(console.error);
+
+    const fetchListUser = async () => {
+      const usersData = await usersAPI.getListUsers();
+      setListUsers((usersData || {}).users || []);
+    };
+    fetchListUser().catch(console.error);
   }, [selectedDate]);
   //componentDidMount - END
   // handle change date --- START
@@ -40,9 +49,11 @@ function Main(props) {
       const params = {
         createDate: date,
       };
+      setLoading(true);
       const data = await tasksAPI.getListTasks(params);
       setTasksList((data || {}).tasksList || []);
       setSelectedDate(date);
+      setLoading(false);
     };
     fetchListTask().catch(console.error);
   };
@@ -50,8 +61,36 @@ function Main(props) {
   const handleAddTask = (params = []) => {
     setTasksList([...tasksList, ...params]);
   };
+
+  const handleUpdate = (param = {}) => {
+    let newTaskList = [];
+    tasksList.forEach((element) => {
+      if (element._id === param._id) {
+        newTaskList.push(param);
+      } else {
+        newTaskList.push(element);
+      }
+    });
+    setTasksList(newTaskList);
+  };
+  const handleUpdateListAfterRemoveTask = (params = {}) => {
+    console.log(
+      "🚀 ~ file: Main.js:77 ~ handleUpdateListAfterRemoveTask ~ params:",
+      params
+    );
+    let newTaskList = [];
+    tasksList.forEach((element) => {
+      if (element._id !== params._id) {
+        newTaskList.push(element);
+      }
+    });
+    setTasksList(newTaskList);
+  };
   const mainState = {
     selectedDate,
+    listUser,
+    handleUpdate,
+    handleUpdateListAfterRemoveTask,
   };
   return (
     <MainContext.Provider value={mainState}>
@@ -101,6 +140,8 @@ function Main(props) {
                   background: "background.gradient",
                   width: "calc(100% - 300px)",
                   height: "100%",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
                 <Grid
@@ -117,6 +158,14 @@ function Main(props) {
                   tasksList={tasksList}
                   handleAddTask={handleAddTask}
                 />
+                {isLoading && (
+                  <Box
+                    height={"calc(100% - 35px)"}
+                    sx={{ position: "absolute", width: "100%", top: "35px" }}
+                  >
+                    <LoadingComponent />
+                  </Box>
+                )}
               </Grid>
             </Grid>
           </Grid>

@@ -55,7 +55,7 @@ const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
 function CreateTask(props) {
   const { handleAddTask } = props;
   const mainState = useContext(MainContext);
-  const { selectedDate } = mainState;
+  const { selectedDate, listUser } = mainState;
   const [expanded, setExpanded] = React.useState(false);
   const [taskName, setTaskName] = React.useState("");
   const [assignedTo, setAssignedTo] = React.useState(null);
@@ -63,7 +63,6 @@ function CreateTask(props) {
   const [address, setAddress] = React.useState("");
   const [quantity, setQuantity] = React.useState(1);
   const [unitPrice, setUnitPrice] = React.useState(0);
-  const [listUser, setListUsers] = React.useState([]);
   const materialListComponentRef = useRef();
   const dataFetchedRef = useRef(false);
   const [open, setOpen] = React.useState(false);
@@ -86,7 +85,7 @@ function CreateTask(props) {
   const handleSaveTask = async () => {
     const materialList = materialListComponentRef.current.getMaterialList();
     const task = {
-      name: taskName,
+      taskName,
       status: "todo",
       assignedTo: (assignedTo || {}).id || null,
       description,
@@ -96,20 +95,19 @@ function CreateTask(props) {
       createDate: selectedDate,
       materials: materialList.map((i) => {
         return {
-          name: i.materialName,
+          materialName: i.materialName,
           quantity: i.quantity,
           unitPrice: i.unitPrice,
         };
       }),
     };
 
-    if (!task.name) {
+    if (!task.taskName) {
       setMandatory({
         taskNameIsNull: true,
       });
       return;
     }
-    console.log("🚀 ~ file: CreateTask.js:74 ~ handleAddTask ~ task", task);
     const saveData = await tasksAPI.addTasks({ listTask: [task] });
     if (saveData.RetCode === 1) {
       handleAddTask((saveData || {}).listTask || []);
@@ -123,23 +121,13 @@ function CreateTask(props) {
       setQuantity(1);
       setUnitPrice("");
       materialListComponentRef.current.setMaterialLists([]);
+      refTextFieldTaskName.current.focus();
       // handle reset field --- end
     } else {
       setRetCode(0);
       setOpen(true);
     }
   };
-  // componentDidMount - START
-  React.useEffect(() => {
-    if (dataFetchedRef.current) return;
-    dataFetchedRef.current = true;
-    const fetchListUser = async () => {
-      const usersData = await usersAPI.getListUsers();
-      setListUsers((usersData || {}).users || []);
-    };
-    fetchListUser().catch(console.error);
-  }, []);
-  //componentDidMount - END
   return (
     <Card sx={{ m: "1rem" }}>
       <ButtonBase

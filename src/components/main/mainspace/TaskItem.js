@@ -1,8 +1,22 @@
-import { Avatar, Grid, IconButton, Paper, Typography } from "@mui/material";
-import React from "react";
+import {
+  Alert,
+  Avatar,
+  ButtonBase,
+  Grid,
+  IconButton,
+  Menu,
+  MenuItem,
+  Modal,
+  Paper,
+  Snackbar,
+  Typography,
+} from "@mui/material";
+import React, { forwardRef, useContext } from "react";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Box } from "@mui/system";
-
+import UpdateTask from "./UpdateTask";
+import { MainContext } from "../../../contexts";
+import { tasksAPI } from "../../../api";
 // Handle name user - START
 function stringToColor(string) {
   let hash = 0;
@@ -48,78 +62,226 @@ function invertColor(hexColor) {
 }
 // Handle name user - END
 
-function TaskItem(props) {
+const TaskItem = forwardRef((props, ref) => {
   const { detailTask = {} } = props;
-  const {
-    name = "",
-    assignedTo = {},
-    // address,
-    // quantity,
-    unitPrice,
-  } = detailTask;
+  const mainState = useContext(MainContext);
+  const { handleUpdate, handleUpdateListAfterRemoveTask } = mainState;
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleCloseMessage = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenMessage(false);
+  };
+
+  //handle Menu START
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const openMenu = Boolean(anchorEl);
+  const handleClick = (event) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+  //handle Menu START
+
+  const [openMessage, setOpenMessage] = React.useState(false);
+  const [retCode, setRetCode] = React.useState(1);
+
+  const { taskName = "", assignedTo = {}, unitPrice, status } = detailTask;
   const { fullName = "" } = assignedTo || {};
+
+  // handle update status task --- START
+  const handleUpdateStatusTask = async (params) => {
+    const saveData = await tasksAPI.editTask({
+      taskId: detailTask._id,
+      taskData: {
+        ...detailTask,
+        ...params,
+        assignedTo: assignedTo.id || null,
+      },
+    });
+    console.log(
+      "🚀 ~ file: TaskItem.js:112 ~ handleUpdateStatusTask ~ saveData:",
+      saveData
+    );
+    if (saveData.RetCode === 1) {
+      handleUpdate(saveData.task);
+      // handle reset field --- end
+      setOpenMessage(true);
+      setRetCode(1);
+      handleCloseMenu();
+    } else {
+      setRetCode(0);
+      setOpenMessage(true);
+      handleCloseMenu();
+    }
+  };
+  // handle update status task --- END
+
+  // handle remove task --- START
+  const handleRemoveTask = async () => {
+    const dataDelete = await tasksAPI.deleteTask({ taskId: detailTask._id });
+    if (dataDelete.RetCode === 1) {
+      handleUpdateListAfterRemoveTask(dataDelete.deletedTask);
+      // handle reset field --- end
+      setOpenMessage(true);
+      setRetCode(1);
+    } else {
+      setRetCode(0);
+      setOpenMessage(true);
+    }
+  };
+  // handle remove task --- END
   return (
-    <Paper sx={{ mb: "1rem" }}>
-      <Grid
-        direction={"column"}
-        container
-        spacing={2}
-        sx={{ width: "100%", m: "0px" }}
+    <Paper sx={{ mb: "1rem", width: "100%" }}>
+      <ButtonBase
+        component="span"
+        sx={{ width: "100%" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleOpen();
+        }}
       >
         <Grid
+          direction={"column"}
           container
-          justifyContent={"space-between"}
-          item
-          sx={{ p: "8px", textAlign: "right" }}
+          spacing={2}
+          sx={{ width: "100%", m: "0px" }}
         >
-          <Box>
-            {!!fullName && (
-              <Avatar
-                sx={{
-                  bgcolor: stringToColor(fullName),
-                  color: invertColor(stringToColor(fullName)),
-                }}
-              >
-                {stringAvatar(fullName)}
-              </Avatar>
-            )}
-          </Box>
-
-          <IconButton
-            sx={{ p: "0px", width: "40px", height: "40px" }}
-            aria-label="detail"
-            size="large"
+          <Grid
+            container
+            justifyContent={"space-between"}
+            item
+            sx={{ p: "8px", textAlign: "right" }}
           >
-            <MoreHorizIcon fontSize="inherit" />
-          </IconButton>
-        </Grid>
-        <Grid item container sx={{ p: "8px" }}>
-          <Grid xs direction={"column"} item container>
-            <Grid item>{name}</Grid>
-            {/*<Grid item>{address}</Grid>*/}
+            <Box>
+              {!!fullName && (
+                <Avatar
+                  sx={{
+                    bgcolor: stringToColor(fullName),
+                    color: invertColor(stringToColor(fullName)),
+                  }}
+                >
+                  {stringAvatar(fullName)}
+                </Avatar>
+              )}
+            </Box>
+
+            <IconButton
+              sx={{ p: "0px", width: "40px", height: "40px" }}
+              aria-label="detail"
+              size="large"
+              onClick={(e) => {
+                handleClick(e);
+              }}
+            >
+              <MoreHorizIcon fontSize="inherit" />
+            </IconButton>
           </Grid>
-          <Grid xs direction={"column"} item container>
-            <Grid item container direction={"column"}>
-              {/*<Grid item container justifyContent={"space-between"}>
-                <Typography variant="body1">Số Lượng:</Typography>
-                <Typography variant="body1">{quantity}</Typography>
-              </Grid>*/}
-              <Grid item container justifyContent={"space-between"}>
-                <Typography variant="body1">Giá:</Typography>
-                <Typography variant="body1">{unitPrice} VND</Typography>
+          <Grid item container sx={{ p: "8px" }}>
+            <Grid xs direction={"column"} item container>
+              <Grid item>
+                <Typography variant="body1">{taskName}</Typography>
               </Grid>
-              {/*<Grid item container justifyContent={"space-between"}>
-                <Typography variant="body1"></Typography>
-                <Typography variant="body1">
-                  {Number(unitPrice) * Number(quantity)} VND
-                </Typography>
-            </Grid>*/}
+            </Grid>
+            <Grid xs direction={"column"} item container>
+              <Grid item container direction={"column"}>
+                <Grid item container justifyContent={"space-between"}>
+                  <Typography variant="body1">Giá:</Typography>
+                  <Typography variant="body1">
+                    {Number(unitPrice).toLocaleString()} VND
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
+      </ButtonBase>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="child-modal-title"
+        aria-describedby="child-modal-description"
+      >
+        <UpdateTask
+          setOpenMessage={setOpenMessage}
+          setRetCode={setRetCode}
+          handleCloseModal={handleClose}
+          detailTask={detailTask}
+        />
+      </Modal>
+      <Snackbar
+        open={openMessage}
+        autoHideDuration={5000}
+        onClose={handleCloseMessage}
+      >
+        <Alert
+          onClose={handleCloseMessage}
+          severity={retCode === 1 ? "success" : "error"}
+          sx={{
+            width: "250px",
+            border: "1px solid",
+            borderColor: retCode === 1 ? "green" : "red",
+          }}
+        >
+          {retCode === 1 ? "Save Success..." : "Save Error..."}
+        </Alert>
+      </Snackbar>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={openMenu}
+        onClose={handleCloseMenu}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+      >
+        {status !== "todo" && (
+          <MenuItem
+            onClick={() => {
+              handleUpdateStatusTask({ status: "todo" });
+            }}
+          >
+            Cần Làm
+          </MenuItem>
+        )}
+        {status !== "doing" && (
+          <MenuItem
+            onClick={() => {
+              handleUpdateStatusTask({ status: "doing" });
+            }}
+          >
+            Đang Làm
+          </MenuItem>
+        )}
+        {status !== "done" && (
+          <MenuItem
+            onClick={() => {
+              handleUpdateStatusTask({ status: "done" });
+            }}
+          >
+            Làm Xong
+          </MenuItem>
+        )}
+        <MenuItem
+          onClick={() => {
+            handleRemoveTask();
+          }}
+        >
+          Xóa
+        </MenuItem>
+      </Menu>
     </Paper>
   );
-}
+});
 
 export default TaskItem;

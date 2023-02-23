@@ -40,22 +40,17 @@ function AddMaterialComponent(props) {
       setIsError(true);
     } else {
       setIsError(false);
-      handleAddMaterial({ id: Date.now(), materialName, quantity, unitPrice });
+      handleAddMaterial({ _id: Date.now(), materialName, quantity, unitPrice });
       setmaterialName("");
       setQuantity(1);
       setUnitPrice("");
-      console.log(
-        "🚀 ~ file: AddMaterialComponent.js:48 ~ handleCheckMandatory ~ refTextFieldMaterialName",
-        refTextFieldMaterialName
-      );
-
       refTextFieldMaterialName.current.focus();
     }
   };
   const { handleAddMaterial } = props;
   return (
     <Box sx={{ display: "flex", alignItems: "flex-end" }}>
-      <CardContent>
+      <CardContent sx={{ width: "100%" }}>
         <TextField
           id="outlined-multiline-static"
           label="Tên Nguyên Vật Liệu"
@@ -87,6 +82,7 @@ function AddMaterialComponent(props) {
             }}
             variant="standard"
             size="small"
+            sx={{ width: "45%" }}
           />
           <TextField
             label="Đơn giá"
@@ -109,6 +105,7 @@ function AddMaterialComponent(props) {
             }}
             variant="standard"
             size="small"
+            sx={{ width: "45%" }}
           />
         </Box>
       </CardContent>
