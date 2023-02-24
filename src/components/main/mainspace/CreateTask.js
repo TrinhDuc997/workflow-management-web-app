@@ -1,6 +1,5 @@
 import {
   Autocomplete,
-  Button,
   Card,
   CardContent,
   Collapse,
@@ -19,11 +18,9 @@ import { ButtonBase } from "@mui/material";
 import { Box } from "@mui/system";
 import { NumericFormat } from "react-number-format";
 import ListMaterial from "./ListMaterial";
-import { usersAPI } from "../../../api/users-api";
 import { tasksAPI } from "../../../api";
-import moment from "moment";
 import { MainContext } from "../../../contexts";
-
+import { LoadingButton } from "@mui/lab";
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={1} ref={ref} variant="standard" {...props} />;
 });
@@ -64,9 +61,9 @@ function CreateTask(props) {
   const [quantity, setQuantity] = React.useState(1);
   const [unitPrice, setUnitPrice] = React.useState(0);
   const materialListComponentRef = useRef();
-  const dataFetchedRef = useRef(false);
   const [open, setOpen] = React.useState(false);
   const [retCode, setRetCode] = React.useState(1);
+  const [isSave, setIsSave] = React.useState(false);
   const refTextFieldTaskName = useRef();
   const [mandatory, setMandatory] = React.useState({
     taskNameIsNull: false,
@@ -108,6 +105,7 @@ function CreateTask(props) {
       });
       return;
     }
+    setIsSave(true);
     const saveData = await tasksAPI.addTasks({ listTask: [task] });
     if (saveData.RetCode === 1) {
       handleAddTask((saveData || {}).listTask || []);
@@ -127,6 +125,8 @@ function CreateTask(props) {
       setRetCode(0);
       setOpen(true);
     }
+
+    setIsSave(false);
   };
   return (
     <Card sx={{ m: "1rem" }}>
@@ -258,16 +258,18 @@ function CreateTask(props) {
             mb: "1rem",
           }}
         >
-          <Button
+          <LoadingButton
+            loading={isSave}
             variant="contained"
             disableElevation
+            // startIcon={<SaveIcon />}
             sx={{ width: "80%" }}
             onClick={() => {
               handleSaveTask();
             }}
           >
             Thêm Thẻ
-          </Button>
+          </LoadingButton>
         </Box>
       </Collapse>
       <Snackbar open={open} autoHideDuration={5000} onClose={handleClose}>

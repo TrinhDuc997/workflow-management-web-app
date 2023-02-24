@@ -3,12 +3,12 @@ import {
   Avatar,
   ButtonBase,
   Grid,
-  IconButton,
   Menu,
   MenuItem,
   Modal,
   Paper,
   Snackbar,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { forwardRef, useContext } from "react";
@@ -17,6 +17,7 @@ import { Box } from "@mui/system";
 import UpdateTask from "./UpdateTask";
 import { MainContext } from "../../../contexts";
 import { tasksAPI } from "../../../api";
+import { LoadingButton } from "@mui/lab";
 // Handle name user - START
 function stringToColor(string) {
   let hash = 0;
@@ -64,6 +65,14 @@ function invertColor(hexColor) {
 
 const TaskItem = forwardRef((props, ref) => {
   const { detailTask = {} } = props;
+  const {
+    taskName = "",
+    assignedTo = {},
+    unitPrice,
+    status,
+    materials = [],
+  } = detailTask;
+  const { fullName = "" } = assignedTo || {};
   const mainState = useContext(MainContext);
   const { handleUpdate, handleUpdateListAfterRemoveTask } = mainState;
   const [open, setOpen] = React.useState(false);
@@ -80,7 +89,11 @@ const TaskItem = forwardRef((props, ref) => {
 
     setOpenMessage(false);
   };
-
+  let totalAmountMaterial = 0;
+  materials.forEach((element) => {
+    const { unitPrice } = element || {};
+    totalAmountMaterial += unitPrice;
+  });
   //handle Menu START
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openMenu = Boolean(anchorEl);
@@ -95,12 +108,11 @@ const TaskItem = forwardRef((props, ref) => {
 
   const [openMessage, setOpenMessage] = React.useState(false);
   const [retCode, setRetCode] = React.useState(1);
-
-  const { taskName = "", assignedTo = {}, unitPrice, status } = detailTask;
-  const { fullName = "" } = assignedTo || {};
+  const [isSave, setIsSave] = React.useState(false);
 
   // handle update status task --- START
   const handleUpdateStatusTask = async (params) => {
+    setIsSave(true);
     const saveData = await tasksAPI.editTask({
       taskId: detailTask._id,
       taskData: {
@@ -109,10 +121,8 @@ const TaskItem = forwardRef((props, ref) => {
         assignedTo: assignedTo.id || null,
       },
     });
-    console.log(
-      "🚀 ~ file: TaskItem.js:112 ~ handleUpdateStatusTask ~ saveData:",
-      saveData
-    );
+    setIsSave(false);
+
     if (saveData.RetCode === 1) {
       handleUpdate(saveData.task);
       // handle reset field --- end
@@ -129,7 +139,10 @@ const TaskItem = forwardRef((props, ref) => {
 
   // handle remove task --- START
   const handleRemoveTask = async () => {
+    setIsSave(true);
     const dataDelete = await tasksAPI.deleteTask({ taskId: detailTask._id });
+    setIsSave(false);
+
     if (dataDelete.RetCode === 1) {
       handleUpdateListAfterRemoveTask(dataDelete.deletedTask);
       // handle reset field --- end
@@ -176,16 +189,26 @@ const TaskItem = forwardRef((props, ref) => {
               )}
             </Box>
 
-            <IconButton
-              sx={{ p: "0px", width: "40px", height: "40px" }}
+            <LoadingButton
+              loading={isSave}
+              sx={{
+                p: "0px",
+                minWidth: "40px",
+                minHeight: "40px",
+              }}
               aria-label="detail"
               size="large"
               onClick={(e) => {
                 handleClick(e);
               }}
             >
-              <MoreHorizIcon fontSize="inherit" />
-            </IconButton>
+              {!isSave && (
+                <MoreHorizIcon
+                  fontSize="large"
+                  sx={{ fontSize: "30px !important" }}
+                />
+              )}
+            </LoadingButton>
           </Grid>
           <Grid item container sx={{ p: "8px" }}>
             <Grid xs direction={"column"} item container>
@@ -193,12 +216,20 @@ const TaskItem = forwardRef((props, ref) => {
                 <Typography variant="body1">{taskName}</Typography>
               </Grid>
             </Grid>
-            <Grid xs direction={"column"} item container>
+            <Grid xs direction={"column"} item container pl={"5px"}>
               <Grid item container direction={"column"}>
                 <Grid item container justifyContent={"space-between"}>
                   <Typography variant="body1">Giá:</Typography>
                   <Typography variant="body1">
                     {Number(unitPrice).toLocaleString()} VND
+                  </Typography>
+                </Grid>
+                <Grid item container justifyContent={"space-between"}>
+                  <Tooltip title="Tổng tiền mua nguyên vật liệu">
+                    <Typography variant="body1">Tiền NVL:</Typography>
+                  </Tooltip>
+                  <Typography variant="body1">
+                    {Number(totalAmountMaterial).toLocaleString()} VND
                   </Typography>
                 </Grid>
               </Grid>

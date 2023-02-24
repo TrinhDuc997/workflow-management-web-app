@@ -1,10 +1,7 @@
 import {
   Autocomplete,
-  Button,
   Card,
   CardContent,
-  Collapse,
-  Snackbar,
   TextareaAutosize,
   // Modal,
   TextField,
@@ -12,18 +9,14 @@ import {
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import React, { useContext, useRef } from "react";
-import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
-import { ButtonBase } from "@mui/material";
 // import { Editor } from "react-draft-wysiwyg";
 // import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { Box } from "@mui/system";
 import { NumericFormat } from "react-number-format";
-import ListMaterial from "./ListMaterial";
-import { usersAPI } from "../../../api/users-api";
 import { tasksAPI } from "../../../api";
-import moment from "moment";
 import { MainContext } from "../../../contexts";
 import UpdateListMaterial from "./UpdateListMaterial";
+import { LoadingButton } from "@mui/lab";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={1} ref={ref} variant="standard" {...props} />;
@@ -73,6 +66,8 @@ const UpdateTask = React.forwardRef((props, ref) => {
   const [address, setAddress] = React.useState(detailTask.address || "");
   const [quantity, setQuantity] = React.useState(detailTask.quantity || "");
   const [unitPrice, setUnitPrice] = React.useState(detailTask.unitPrice || "");
+  const [isSave, setIsSave] = React.useState(false);
+
   const materialListComponentRef = useRef();
 
   const refTextFieldTaskName = useRef();
@@ -107,6 +102,7 @@ const UpdateTask = React.forwardRef((props, ref) => {
       });
       return;
     }
+    setIsSave(true);
     const saveData = await tasksAPI.editTask({
       taskId: detailTask._id,
       taskData: task,
@@ -121,6 +117,7 @@ const UpdateTask = React.forwardRef((props, ref) => {
       setRetCode(0);
       setOpenMessage(true);
     }
+    setIsSave(false);
   };
   const labelsStatus = {
     todo: "Cần làm",
@@ -132,8 +129,8 @@ const UpdateTask = React.forwardRef((props, ref) => {
       sx={{
         m: "auto",
         mt: "5vh",
-        width: "40%",
-        height: "70vh",
+        width: { xs: "95%", md: "40%" },
+        height: { xs: "80vh", md: "70vh" },
         overflow: "auto",
       }}
     >
@@ -261,7 +258,8 @@ const UpdateTask = React.forwardRef((props, ref) => {
           zIndex: "999",
         }}
       >
-        <Button
+        <LoadingButton
+          loading={isSave}
           variant="contained"
           disableElevation
           sx={{ width: "80%" }}
@@ -270,7 +268,7 @@ const UpdateTask = React.forwardRef((props, ref) => {
           }}
         >
           Cập Nhật Thẻ
-        </Button>
+        </LoadingButton>
       </Box>
     </Card>
   );
