@@ -119,7 +119,7 @@ function CalendarTree(props) {
         onNodeSelect={handleSelect}
         multiSelect
         sx={{
-          height: "calc(100vh - 8rem)",
+          height: "100%",
           overflow: "auto",
         }}
       >

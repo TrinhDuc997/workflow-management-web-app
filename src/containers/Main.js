@@ -52,6 +52,7 @@ function Main(props) {
   const [selectedDate, setSelectedDate] = useState(moment().format("YYYYMMDD"));
   const [tasksList, setTasksList] = useState([]);
   const dataFetchedRef = useRef(false);
+  const refMainDrawer = useRef();
   const [isLoading, setLoading] = useState(false);
   const [listUser, setListUsers] = React.useState([]);
 
@@ -86,7 +87,21 @@ function Main(props) {
       setListUsers((usersData || {}).users || []);
     };
     fetchListUser().catch(console.error);
+
+    //Add addEventListener for element <MainDrawer/> --- START
+    if (window.innerWidth < 900) {
+      console.log(
+        "🚀 ~ file: Main.js:94 ~ Main ~ refMainDrawer:",
+        refMainDrawer
+      );
+      const mainElement = refMainDrawer.current;
+      mainElement.addEventListener("click", () => {
+        setOpenDrawer(false);
+      });
+    }
+    //Add addEventListener for element <MainDrawer/> --- END
   }, [selectedDate]);
+
   //componentDidMount - END
   // handle change date --- START
   const handleChangeDate = (date = "") => {
@@ -94,10 +109,14 @@ function Main(props) {
       const params = {
         createDate: date,
       };
+      if (window.innerWidth < 900) {
+        setOpenDrawer(false);
+      }
       setLoading(true);
       const data = await tasksAPI.getListTasks(params);
       setTasksList((data || {}).tasksList || []);
       setSelectedDate(date);
+
       setLoading(false);
     };
     fetchListTask().catch(console.error);
@@ -159,6 +178,7 @@ function Main(props) {
   const handleDrawerClose = () => {
     setOpenDrawer(false);
   };
+
   // handle Drawer --- END
   return (
     <MainContext.Provider value={mainState}>
@@ -167,7 +187,7 @@ function Main(props) {
           bgcolor: "background.default",
           color: "text.primary",
         }}
-        height={"100vh"}
+        height={{ md: "100vh", xs: "90vh" }}
       >
         <Grid container spacing={1} direction="column" sx={{ mt: "0px" }}>
           <Grid
@@ -186,7 +206,11 @@ function Main(props) {
           >
             <Hearder theme={theme} colorMode={colorMode} />
           </Grid>
-          <Grid item container height={"calc(100vh - 4rem)"}>
+          <Grid
+            item
+            container
+            height={{ md: "calc(100vh - 4rem)", xs: "calc(90vh - 4rem)" }}
+          >
             <Grid container spacing={1} height={"100%"} flexWrap={"nowrap"}>
               <Drawer
                 sx={{
@@ -227,7 +251,7 @@ function Main(props) {
                   />
                 </Grid>
               </Drawer>
-              <MainDrawer open={openDrawer}>
+              <MainDrawer ref={refMainDrawer} id="MainDrawer" open={openDrawer}>
                 <Grid
                   item
                   className="SpaceMain"
