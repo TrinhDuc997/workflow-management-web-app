@@ -11,7 +11,7 @@ function SpaceLeft(props) {
     <Box width={"100%"} height={"100%"}>
       <IconButton
         onClick={handleDrawerClose}
-        sx={{ position: "absolute", right: "0px" }}
+        sx={{ position: "absolute", right: "0px", zIndex: 999 }}
       >
         <ChevronLeftIcon />
       </IconButton>
