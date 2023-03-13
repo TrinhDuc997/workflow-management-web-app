@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import moment from "moment";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -7,6 +7,7 @@ import TreeItem from "@mui/lab/TreeItem";
 import { Box, Typography } from "@mui/material";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { MainContext } from "../../contexts";
 
 function generateDataCalendar(year) {
   const daysOfYear = {};
@@ -34,6 +35,8 @@ function generateDataCalendar(year) {
 
 function CalendarTree(props) {
   const { handleChangeDate } = props;
+  const mainState = useContext(MainContext);
+  const { handleChangeDateToGetReportMonth } = mainState;
   const [year, setYear] = React.useState(moment().format("YYYY"));
   const daysOfYear = generateDataCalendar(year);
   const currentDay = moment().format("DD");
@@ -43,12 +46,22 @@ function CalendarTree(props) {
     `${year}${currentMonth}${currentDay}`,
   ]);
   const handleToggle = (event, nodeIds) => {
-    setExpanded(nodeIds);
+    if (event.target.nodeName !== "H6") {
+      setExpanded(nodeIds);
+    }
   };
 
   const handleSelect = (event, nodeIds) => {
-    setSelected(nodeIds);
-    handleChangeDate(nodeIds[0]);
+    console.log("🚀 ~ file: CalendarTree.js:55 ~ handleSelect ~ event:", event);
+    if (event.target.nodeName !== "path" && event.target.nodeName !== "svg") {
+      setSelected(nodeIds);
+      const checkNodeSelectedIsMonth = (nodeIds[0] || "").length === 6; // if equal 6 then it's the month, otherwise it's the day
+      if (checkNodeSelectedIsMonth) {
+        handleChangeDateToGetReportMonth(nodeIds[0]);
+      } else {
+        handleChangeDate(nodeIds[0]);
+      }
+    }
   };
 
   const monthNumber = [
@@ -91,6 +104,7 @@ function CalendarTree(props) {
                   borderRadius: "10px",
                   ml: "10px",
                   mr: "10px",
+                  mt: "8px",
                   //   "&:hover": {
                   //     backgroundColor: "background.default",
                   //   },
@@ -111,8 +125,8 @@ function CalendarTree(props) {
       </LocalizationProvider>
       <TreeView
         aria-label="controlled"
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpandIcon={<ChevronRightIcon />}
+        defaultCollapseIcon={<ExpandMoreIcon fontSize="25px" />}
+        defaultExpandIcon={<ChevronRightIcon fontSize="25px" />}
         expanded={expanded}
         selected={selected}
         onNodeToggle={handleToggle}
@@ -138,7 +152,17 @@ function CalendarTree(props) {
                   }}
                 >{`Tháng ${item}`}</Typography>
               }
-              sx={{ borderRadius: "10px", ml: "5px", mr: "5px" }}
+              sx={{
+                borderRadius: "10px",
+                ml: "5px",
+                mr: "5px",
+                "& .MuiTreeItem-content .MuiTreeItem-iconContainer": {
+                  width: "30px",
+                },
+                "& .MuiTreeItem-content .MuiTreeItem-iconContainer svg": {
+                  fontSize: "25px",
+                },
+              }}
             >
               {daysOfMonth.map((subItem) => {
                 return (

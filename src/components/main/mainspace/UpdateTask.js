@@ -17,6 +17,7 @@ import { tasksAPI } from "../../../api";
 import { MainContext } from "../../../contexts";
 import UpdateListMaterial from "./UpdateListMaterial";
 import { LoadingButton } from "@mui/lab";
+import action from "../../../utils/actionCommon";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={1} ref={ref} variant="standard" {...props} />;
@@ -53,6 +54,8 @@ const UpdateTask = React.forwardRef((props, ref) => {
     setOpenMessage,
     setRetCode,
   } = props;
+  const { roles = [] } = JSON.parse(localStorage.getItem("dataUser") || "{}");
+  const checkPermitEditTask = action.checkPermission(roles, "edit_dashboard");
   const { materials = [], assignedTo: propsAssignedTo = null } = detailTask;
   const mainState = useContext(MainContext);
   const { selectedDate, listUser, handleUpdate } = mainState;
@@ -258,17 +261,19 @@ const UpdateTask = React.forwardRef((props, ref) => {
           zIndex: "999",
         }}
       >
-        <LoadingButton
-          loading={isSave}
-          variant="contained"
-          disableElevation
-          sx={{ width: "80%" }}
-          onClick={() => {
-            handleSaveTask();
-          }}
-        >
-          Cập Nhật Thẻ
-        </LoadingButton>
+        {checkPermitEditTask && (
+          <LoadingButton
+            loading={isSave}
+            variant="contained"
+            disableElevation
+            sx={{ width: "80%" }}
+            onClick={() => {
+              handleSaveTask();
+            }}
+          >
+            Cập Nhật Thẻ
+          </LoadingButton>
+        )}
       </Box>
     </Card>
   );

@@ -18,6 +18,7 @@ import UpdateTask from "./UpdateTask";
 import { MainContext } from "../../../contexts";
 import { tasksAPI } from "../../../api";
 import { LoadingButton } from "@mui/lab";
+import action from "../../../utils/actionCommon";
 // Handle name user - START
 function stringToColor(string) {
   let hash = 0;
@@ -65,6 +66,8 @@ function invertColor(hexColor) {
 
 const TaskItem = forwardRef((props, ref) => {
   const { detailTask = {} } = props;
+  const { roles = [] } = JSON.parse(localStorage.getItem("dataUser") || "{}");
+  const checkPermitEditTask = action.checkPermission(roles, "edit_dashboard");
   const {
     taskName = "",
     assignedTo = {},
@@ -104,7 +107,7 @@ const TaskItem = forwardRef((props, ref) => {
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
-  //handle Menu START
+  //handle Menu END
 
   const [openMessage, setOpenMessage] = React.useState(false);
   const [retCode, setRetCode] = React.useState(1);
@@ -189,26 +192,28 @@ const TaskItem = forwardRef((props, ref) => {
               )}
             </Box>
 
-            <LoadingButton
-              loading={isSave}
-              sx={{
-                p: "0px",
-                minWidth: "40px",
-                minHeight: "40px",
-              }}
-              aria-label="detail"
-              size="large"
-              onClick={(e) => {
-                handleClick(e);
-              }}
-            >
-              {!isSave && (
-                <MoreHorizIcon
-                  fontSize="large"
-                  sx={{ fontSize: "30px !important" }}
-                />
-              )}
-            </LoadingButton>
+            {checkPermitEditTask && (
+              <LoadingButton
+                loading={isSave}
+                sx={{
+                  p: "0px",
+                  minWidth: "40px",
+                  minHeight: "40px",
+                }}
+                aria-label="detail"
+                size="large"
+                onClick={(e) => {
+                  handleClick(e);
+                }}
+              >
+                {!isSave && (
+                  <MoreHorizIcon
+                    fontSize="large"
+                    sx={{ fontSize: "30px !important" }}
+                  />
+                )}
+              </LoadingButton>
+            )}
           </Grid>
           <Grid item container sx={{ p: "8px" }}>
             <Grid xs direction={"column"} item container>

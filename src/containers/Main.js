@@ -23,6 +23,8 @@ import LoadingComponent from "../components/common/LoadingComponent";
 import InfoIcon from "@mui/icons-material/Info";
 import MenuIcon from "@mui/icons-material/Menu";
 import styled from "@emotion/styled";
+import MonthReport from "../components/main/mainspace/MonthReport/MonthReport";
+import action from "../utils/actionCommon";
 
 const drawerWidth = 300;
 const MainDrawer = styled("main", {
@@ -51,12 +53,15 @@ function Main(props) {
   const colorMode = React.useContext(ColorModeContext);
   const [selectedDate, setSelectedDate] = useState(moment().format("YYYYMMDD"));
   const [tasksList, setTasksList] = useState([]);
+  const [tasksListAccordingDay, setTasksListAccordingDay] = useState([]);
   const dataFetchedRef = useRef(false);
   const refMainDrawer = useRef();
   const [isLoading, setLoading] = useState(false);
+  const [selectedIsMonth, setSelectedIsMonth] = useState(false);
   const [listUser, setListUsers] = React.useState([]);
-
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const { roles = [] } = JSON.parse(localStorage.getItem("dataUser") || "{}");
+  const checkPermitViewReport = action.checkPermission(roles, "view_report");
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -90,10 +95,6 @@ function Main(props) {
 
     //Add addEventListener for element <MainDrawer/> --- START
     if (window.innerWidth < 900) {
-      console.log(
-        "🚀 ~ file: Main.js:94 ~ Main ~ refMainDrawer:",
-        refMainDrawer
-      );
       const mainElement = refMainDrawer.current;
       mainElement.addEventListener("click", () => {
         setOpenDrawer(false);
@@ -103,6 +104,7 @@ function Main(props) {
   }, [selectedDate]);
 
   //componentDidMount - END
+
   // handle change date --- START
   const handleChangeDate = (date = "") => {
     const fetchListTask = async () => {
@@ -118,6 +120,25 @@ function Main(props) {
       setSelectedDate(date);
 
       setLoading(false);
+      setSelectedIsMonth(false);
+    };
+    fetchListTask().catch(console.error);
+  };
+  const handleChangeDateToGetReportMonth = (month = "") => {
+    const fetchListTask = async () => {
+      const params = {
+        monthSelected: month,
+      };
+      if (window.innerWidth < 900) {
+        setOpenDrawer(false);
+      }
+      setLoading(true);
+      const data = await tasksAPI.getListTaskAccordingMonth(params);
+      setTasksListAccordingDay((data || {}).tasksListAccrodingDay || []);
+      setSelectedDate(month);
+
+      setLoading(false);
+      setSelectedIsMonth(true);
     };
     fetchListTask().catch(console.error);
   };
@@ -151,19 +172,35 @@ function Main(props) {
     listUser,
     handleUpdate,
     handleUpdateListAfterRemoveTask,
+    handleChangeDateToGetReportMonth,
   };
 
   // handle calculate total amount --- START
   let totalAmountTask = 0,
     TotalAmountMaterial = 0;
-  tasksList.forEach((i) => {
-    const { unitPrice = 0, materials = [] } = i || {};
-    totalAmountTask += unitPrice;
-    materials.forEach((subI) => {
-      const { unitPrice } = subI || {};
-      TotalAmountMaterial += unitPrice;
+  if (selectedIsMonth && checkPermitViewReport) {
+    for (const day in tasksListAccordingDay) {
+      const taskData = tasksListAccordingDay[day] || [];
+      taskData.forEach((i) => {
+        const { unitPrice, quantity, materials } = i || {};
+        totalAmountTask += unitPrice * quantity;
+        materials.forEach((subI) => {
+          const { unitPrice, quantity = 0 } = subI || {};
+          TotalAmountMaterial += unitPrice * quantity;
+        });
+      });
+    }
+  } else {
+    tasksList.forEach((i) => {
+      const { unitPrice = 0, quantity = 0, materials = [] } = i || {};
+      totalAmountTask += unitPrice * quantity;
+      materials.forEach((subI) => {
+        const { unitPrice, quantity = 0 } = subI || {};
+        TotalAmountMaterial += unitPrice * quantity;
+      });
     });
-  });
+  }
+
   // handle calculate total amount --- END
 
   // handle Drawer --- START
@@ -180,6 +217,7 @@ function Main(props) {
   };
 
   // handle Drawer --- END
+
   return (
     <MainContext.Provider value={mainState}>
       <Box
@@ -227,7 +265,6 @@ function Main(props) {
                     position: "relative",
                     borderRadius: "0px",
                     overflowX: "hidden",
-                    pt: "8px",
                   },
                 }}
                 variant="persistent"
@@ -282,24 +319,40 @@ function Main(props) {
                       >
                         <MenuIcon />
                       </IconButton>
-                      {moment(selectedDate).format("DD/MM/YYYY")}
+                      {selectedIsMonth && checkPermitViewReport
+                        ? moment(selectedDate).format("MM/YYYY")
+                        : moment(selectedDate).format("DD/MM/YYYY")}
                     </Typography>
                     <ButtonBase
                       aria-describedby={id}
                       variant="contained"
                       onClick={handleClick}
                     >
-                      <Typography
-                        variant="subtitle1"
-                        fontWeight={"900"}
-                        sx={{ display: { xs: "none", md: "block" } }}
-                      >
-                        Tổng Tiền Trong Ngày:{" "}
-                        {Number(
-                          totalAmountTask - TotalAmountMaterial
-                        ).toLocaleString()}{" "}
-                        VND
-                      </Typography>
+                      {selectedIsMonth && checkPermitViewReport ? (
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight={"900"}
+                          sx={{ display: { xs: "none", md: "block" } }}
+                        >
+                          Tổng Tiền Trong Tháng:{" "}
+                          {Number(
+                            totalAmountTask - TotalAmountMaterial
+                          ).toLocaleString()}{" "}
+                          VND
+                        </Typography>
+                      ) : (
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight={"900"}
+                          sx={{ display: { xs: "none", md: "block" } }}
+                        >
+                          Tổng Tiền Trong Ngày:{" "}
+                          {Number(
+                            totalAmountTask - TotalAmountMaterial
+                          ).toLocaleString()}{" "}
+                          VND
+                        </Typography>
+                      )}
                       <InfoIcon sx={{ display: { xs: "block", md: "none" } }} />
                     </ButtonBase>
 
@@ -340,10 +393,16 @@ function Main(props) {
                       </Box>
                     </Popover>
                   </Grid>
-                  <MainSpace
-                    tasksList={tasksList}
-                    handleAddTask={handleAddTask}
-                  />
+                  {selectedIsMonth && checkPermitViewReport ? (
+                    <MonthReport
+                      listTaskAccordingMonth={tasksListAccordingDay}
+                    />
+                  ) : (
+                    <MainSpace
+                      tasksList={tasksList}
+                      handleAddTask={handleAddTask}
+                    />
+                  )}
                   {isLoading && (
                     <Box
                       height={"calc(100% - 35px)"}

@@ -13,4 +13,7 @@ export const tasksAPI = {
   getListTasks(req) {
     return axiosClient.get("./task/getListTask", { params: req });
   },
+  getListTaskAccordingMonth(req) {
+    return axiosClient.get("./task/getListTaskAccordingMonth", { params: req });
+  },
 };

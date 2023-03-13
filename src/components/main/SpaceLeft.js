@@ -3,7 +3,6 @@ import React from "react";
 import CalendarTree from "./CalendarTree";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { IconButton } from "@mui/material";
-import { scrollbarBackgroundColorLightMode } from "../../utils/theme";
 
 function SpaceLeft(props) {
   const { handleChangeDate, handleDrawerClose } = props;
@@ -27,7 +26,7 @@ function SpaceLeft(props) {
     >
       <IconButton
         onClick={handleDrawerClose}
-        sx={{ position: "absolute", right: "0px", zIndex: 999 }}
+        sx={{ position: "absolute", right: "10px", top: "5px", zIndex: 999 }}
       >
         <ChevronLeftIcon />
       </IconButton>

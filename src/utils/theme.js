@@ -129,6 +129,33 @@ export const getDesignTokens = (mode) => ({
               },
             },
           },
+          MuiTableCell: {
+            styleOverrides: {
+              root: {
+                borderBottomColor: green[600],
+              },
+              head: {
+                backgroundColor: grey[300],
+              },
+            },
+          },
+          MuiTableContainer: {
+            styleOverrides: {
+              root: {
+                borderRadius: "10px",
+                "&::-webkit-scrollbar": {
+                  backgroundColor: "background.default",
+                  position: "absolute",
+                  borderRadius: "10px",
+                  width: "10px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: scrollbarBackgroundColorLightMode,
+                  borderRadius: "10px",
+                },
+              },
+            },
+          },
         }
       : {
           MuiSvgIcon: {
@@ -203,6 +230,33 @@ export const getDesignTokens = (mode) => ({
               root: {
                 "&.Mui-focusVisible": {
                   backgroundColor: "#2196f352",
+                },
+              },
+            },
+          },
+          MuiTableCell: {
+            styleOverrides: {
+              root: {
+                borderBottomColor: blue[800],
+              },
+              head: {
+                backgroundColor: "#011e3c",
+              },
+            },
+          },
+          MuiTableContainer: {
+            styleOverrides: {
+              root: {
+                borderRadius: "10px",
+                "&::-webkit-scrollbar": {
+                  backgroundColor: "background.default",
+                  position: "absolute",
+                  borderRadius: "10px",
+                  width: "10px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: scrollbarBackgroundColorDarkMode,
+                  borderRadius: "10px",
                 },
               },
             },

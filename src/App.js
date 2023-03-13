@@ -5,6 +5,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import Main from "./containers/Main";
+import Admin from "./containers/Admin";
 import Login from "./components/authentication/Login";
 // import { ThemeProvider } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -33,6 +34,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/admin",
+    element: (
+      <PrivateRoute>
+        <Admin ColorModeContext={ColorModeContext} />
+      </PrivateRoute>
+    ),
+  },
+  {
     path: "/login",
     element: (
       <ThemeProvider theme={theme}>
@@ -44,7 +53,7 @@ const router = createBrowserRouter([
 
 function App() {
   const [mode, setMode] = React.useState(
-    localStorage.getItem("prevMode") || "light"
+    localStorage.getItem("prevMode") || "dark"
   );
   const colorMode = React.useMemo(
     () => ({

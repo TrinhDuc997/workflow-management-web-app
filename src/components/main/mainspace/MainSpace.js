@@ -1,6 +1,7 @@
 import { Divider, Paper, Stack } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
+import action from "../../../utils/actionCommon";
 import CreateTask from "./CreateTask";
 import ListHeader from "./ListHeader";
 import TasksList from "./TasksList";
@@ -10,6 +11,8 @@ function MainSpace(props) {
   const ListTodo = tasksList.filter((i) => i.status === "todo");
   const ListDoing = tasksList.filter((i) => i.status === "doing");
   const ListDone = tasksList.filter((i) => i.status === "done");
+  const { roles = [] } = JSON.parse(localStorage.getItem("dataUser") || "{}");
+  const checkPermitAddTask = action.checkPermission(roles, "add_dashboard");
   return (
     <Box height={"calc(100% - 35px)"} sx={{ overflowX: "auto" }}>
       <Stack
@@ -48,7 +51,7 @@ function MainSpace(props) {
             }}
           >
             <TasksList tasksList={ListTodo} />
-            <CreateTask handleAddTask={handleAddTask} />
+            {checkPermitAddTask && <CreateTask handleAddTask={handleAddTask} />}
           </Box>
         </Paper>
         <Paper sx={{ width: "30%", minWidth: "360px", ml: "10px", mr: "10px" }}>

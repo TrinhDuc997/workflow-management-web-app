@@ -11,6 +11,7 @@ import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import { Divider } from "@mui/material";
+import action from "../../utils/actionCommon";
 
 // Handle name user - START
 function stringToColor(string) {
@@ -72,9 +73,15 @@ export default function AccountMenu() {
     localStorage.removeItem("dataUser");
     return navigate("/login");
   }
-  const { fullName = "" } = JSON.parse(
+
+  async function viewProfile(viewPanel) {
+    return navigate("/admin", { state: { showPanelSelected: viewPanel } });
+  }
+
+  const { fullName = "", roles = [] } = JSON.parse(
     localStorage.getItem("dataUser") || "{}"
   );
+  const checkPermitAddUser = action.checkPermission(roles, "add_dashboard");
   return (
     <React.Fragment>
       <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
@@ -137,21 +144,25 @@ export default function AccountMenu() {
       >
         <MenuItem onClick={handleClose}>Xin Chào {fullName}</MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>
+        <MenuItem
+          onClick={() => {
+            viewProfile("VIEWPROFILE");
+          }}
+        >
           <Avatar sx={{ bgcolor: stringToColor(fullName) }} /> Thông Tin Cá Nhân
         </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Thêm Tài Khoản
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          Cài Đặt
-        </MenuItem>
+        {checkPermitAddUser && (
+          <MenuItem
+            onClick={() => {
+              viewProfile("USERMANAGE");
+            }}
+          >
+            <ListItemIcon>
+              <PersonAdd fontSize="small" />
+            </ListItemIcon>
+            Thêm Tài Khoản
+          </MenuItem>
+        )}
         <MenuItem
           onClick={() => {
             handleLogout();
