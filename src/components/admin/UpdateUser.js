@@ -20,20 +20,20 @@ import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-function UpdateUserComponent(props) {
+function UpdateUser(props) {
   const { handleUpdateUser, handleClose } = props;
   const [profile, setProfile] = useState(props.profile || {});
 
-  const dataFetchedRef = useRef(false);
+  // const dataFetchedRef = useRef(false);
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
   const [checkPassword, setCheckPassword] = React.useState(false);
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  const { userName = "" } = JSON.parse(
-    localStorage.getItem("dataUser") || "{}"
-  );
+  // const { userName = "" } = JSON.parse(
+  //   localStorage.getItem("dataUser") || "{}"
+  // );
 
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -81,6 +81,7 @@ function UpdateUserComponent(props) {
       setLoading(true);
       const dataUpdated = await usersAPI.updateProfile({ newProfile });
       setLoading(false);
+
       setProfile(dataUpdated.newProfile || {});
       handleUpdateUser(dataUpdated.newProfile || {});
       handleClose();
@@ -274,4 +275,4 @@ function UpdateUserComponent(props) {
   );
 }
 
-export default UpdateUserComponent;
+export default UpdateUser;

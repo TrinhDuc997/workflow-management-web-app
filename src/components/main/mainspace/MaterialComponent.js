@@ -116,7 +116,7 @@ const EditMaterial = (props) => {
       <CardContent>
         <TextField
           id="outlined-multiline-static"
-          label="Tên Nguyên Vật Liệu"
+          label="Tên nguyên vật liệu"
           multiline
           rows={1}
           sx={{ width: "100%", pb: "2px" }}
@@ -243,7 +243,7 @@ function MaterialComponent(props) {
       {editMode ? (
         <EditMaterial
           quantity={quantity}
-          id={dataMaterial.id || ""}
+          id={dataMaterial._id || ""}
           setQuantity={setQuantity}
           unitPrice={unitPrice}
           setUnitPrice={setUnitPrice}
@@ -258,7 +258,7 @@ function MaterialComponent(props) {
             materialName,
             quantity,
             unitPrice,
-            id: dataMaterial.id || "",
+            id: dataMaterial._id || "",
           }}
           setEditMode={setEditMode}
           handleRemoveMateial={handleRemoveMateial}

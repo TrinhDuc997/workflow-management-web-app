@@ -6,7 +6,8 @@ import TreeView from "@mui/lab/TreeView";
 import TreeItem from "@mui/lab/TreeItem";
 import { Box, Typography } from "@mui/material";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { MainContext } from "../../contexts";
 
 function generateDataCalendar(year) {
@@ -82,7 +83,7 @@ function CalendarTree(props) {
   return (
     <Box sx={{ flexGrow: 1, maxWidth: 400, overflowY: "auto" }}>
       <LocalizationProvider dateAdapter={AdapterMoment}>
-        <DatePicker
+        <DesktopDatePicker
           label="select year"
           openTo="year"
           views={["year"]}

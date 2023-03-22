@@ -11,8 +11,8 @@ function MainSpace(props) {
   const ListTodo = tasksList.filter((i) => i.status === "todo");
   const ListDoing = tasksList.filter((i) => i.status === "doing");
   const ListDone = tasksList.filter((i) => i.status === "done");
-  const { roles = [] } = JSON.parse(localStorage.getItem("dataUser") || "{}");
-  const checkPermitAddTask = action.checkPermission(roles, "add_dashboard");
+  // const { roles = [] } = JSON.parse(localStorage.getItem("dataUser") || "{}");
+  // const checkPermitAddTask = action.checkPermission(roles, "add_dashboard");
   return (
     <Box height={"calc(100% - 35px)"} sx={{ overflowX: "auto" }}>
       <Stack
@@ -33,7 +33,7 @@ function MainSpace(props) {
             mr: "10px",
           }}
         >
-          <ListHeader title="Cần Làm" />
+          <ListHeader title="Cần làm" />
           <Box
             sx={{
               height: "calc(100% - 30px)",
@@ -51,7 +51,7 @@ function MainSpace(props) {
             }}
           >
             <TasksList tasksList={ListTodo} />
-            {checkPermitAddTask && <CreateTask handleAddTask={handleAddTask} />}
+            <CreateTask handleAddTask={handleAddTask} />
           </Box>
         </Paper>
         <Paper sx={{ width: "30%", minWidth: "360px", ml: "10px", mr: "10px" }}>
@@ -71,7 +71,7 @@ function MainSpace(props) {
               },
             }}
           >
-            <ListHeader title="Đang Làm" />
+            <ListHeader title="Đang làm" />
             <TasksList tasksList={ListDoing} />
           </Box>
         </Paper>
@@ -92,7 +92,7 @@ function MainSpace(props) {
               },
             }}
           >
-            <ListHeader title="Làm Xong" />
+            <ListHeader title="Làm xong" />
             <TasksList tasksList={ListDone} />
           </Box>
         </Paper>

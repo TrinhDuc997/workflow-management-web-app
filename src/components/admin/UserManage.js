@@ -1,6 +1,5 @@
 import { LoadingButton } from "@mui/lab";
 import {
-  Alert,
   ButtonBase,
   CardContent,
   Collapse,
@@ -10,7 +9,6 @@ import {
   Grid,
   IconButton,
   InputAdornment,
-  InputLabel,
   ListItemIcon,
   Modal,
   OutlinedInput,
@@ -19,6 +17,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 import { Box } from "@mui/system";
 import React, { useRef, useState } from "react";
 import { usersAPI } from "../../api";
@@ -27,7 +26,11 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import { Person } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import UpdateUserComponent from "./UpdateUserComponent";
+import UpdateUser from "./UpdateUser";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={1} ref={ref} variant="standard" {...props} />;
+});
 
 function UserManage() {
   const [profile, setProfile] = useState({});
@@ -65,7 +68,6 @@ function UserManage() {
     if (reason === "clickaway") {
       return;
     }
-
     setOpenMessage(false);
   };
 
@@ -136,6 +138,8 @@ function UserManage() {
       }
     });
     setUsersList(listUserUpdated);
+    setOpenMessage(true);
+    setRetCode(1);
   };
   const handleDeleteUser = async (userId) => {
     const userDeleted = await usersAPI.deleteUser({ userId });
@@ -448,7 +452,7 @@ function UserManage() {
             p: 4,
           }}
         >
-          <UpdateUserComponent
+          <UpdateUser
             profile={dataUserUpdate}
             handleUpdateUser={handleUpdateUser}
             handleClose={handleClose}

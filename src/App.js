@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   createBrowserRouter,
   Navigate,
@@ -11,6 +11,7 @@ import Login from "./components/authentication/Login";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { getDesignTokens } from "./utils/theme";
 import theme from "./utils/theme";
+import io from "socket.io-client";
 // import { GlobalStyles } from "@mui/styled-engine";
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
@@ -55,6 +56,28 @@ function App() {
   const [mode, setMode] = React.useState(
     localStorage.getItem("prevMode") || "dark"
   );
+  const dataFetchedRef = useRef(false);
+
+  // ComponentDidMount --- START
+  React.useEffect(() => {
+    // if (dataFetchedRef.current) return;
+    // dataFetchedRef.current = true;
+    const socket = io(process.env.REACT_APP_API_URL, {
+      reconnectionAttempts: 5,
+      secure: true,
+    });
+    socket.on("connect", () => {
+      console.log("Connected to server!");
+    });
+    // return () => {
+    //   console.log("cleanup App");
+    //   socket.off("connect", () => {
+    //     console.log("Connected to server!");
+    //   });
+    // };
+  }, []);
+
+  // ComponentDidMount --- End
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {

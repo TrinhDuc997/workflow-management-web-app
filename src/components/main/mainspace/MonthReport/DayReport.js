@@ -68,10 +68,10 @@ function DayReport(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell>Tên Công Việc</TableCell>
-                    <TableCell align="right">Số Lượng</TableCell>
-                    <TableCell align="right">Đơn Giá</TableCell>
-                    <TableCell align="right">Tổng Tiền Mua NVL</TableCell>
-                    <TableCell align="right">Tổng Tiền Của Công Việc</TableCell>
+                    <TableCell align="right">Số lượng</TableCell>
+                    <TableCell align="right">Đơn giá</TableCell>
+                    <TableCell align="right">Tổng tiền mua NVL</TableCell>
+                    <TableCell align="right">Tổng tiền của công việc</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

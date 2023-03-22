@@ -21,6 +21,7 @@ import ListMaterial from "./ListMaterial";
 import { tasksAPI } from "../../../api";
 import { MainContext } from "../../../contexts";
 import { LoadingButton } from "@mui/lab";
+import { socket } from "../../../socket";
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={1} ref={ref} variant="standard" {...props} />;
 });
@@ -58,6 +59,7 @@ function CreateTask(props) {
   const [assignedTo, setAssignedTo] = React.useState(null);
   const [description, setDescription] = React.useState("");
   const [address, setAddress] = React.useState("");
+  const [phoneNumber, setPhoneNumber] = React.useState("");
   const [quantity, setQuantity] = React.useState(1);
   const [unitPrice, setUnitPrice] = React.useState(0);
   const materialListComponentRef = useRef();
@@ -84,9 +86,10 @@ function CreateTask(props) {
     const task = {
       taskName,
       status: "todo",
-      assignedTo: (assignedTo || {}).id || null,
+      assignedTo: (assignedTo || {})._id || null,
       description,
       address,
+      phoneNumber,
       quantity,
       unitPrice,
       createDate: selectedDate,
@@ -109,6 +112,7 @@ function CreateTask(props) {
     const saveData = await tasksAPI.addTasks({ listTask: [task] });
     if (saveData.RetCode === 1) {
       handleAddTask((saveData || {}).listTask || []);
+      socket.emit("task:create", (saveData || {}).listTask || []);
       setRetCode(1);
       setOpen(true);
       // handle reset field --- start
@@ -116,6 +120,7 @@ function CreateTask(props) {
       setAssignedTo(null);
       setDescription("");
       setAddress("");
+      setPhoneNumber("");
       setQuantity(1);
       setUnitPrice("");
       materialListComponentRef.current.setMaterialLists([]);
@@ -145,7 +150,7 @@ function CreateTask(props) {
         }}
       >
         <AddBoxOutlinedIcon />{" "}
-        <Typography variant="subtitle2">Thêm Thẻ</Typography>
+        <Typography variant="subtitle2">Thêm Việc</Typography>
       </ButtonBase>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
@@ -204,7 +209,7 @@ function CreateTask(props) {
           />
           <TextField
             id="outlined-multiline-static"
-            label="Nhập Địa Chỉ"
+            label="Nhập địa chỉ"
             multiline
             rows={1}
             sx={{ width: "100%", pb: "1rem" }}
@@ -213,6 +218,19 @@ function CreateTask(props) {
             value={address}
             onChange={(e) => {
               setAddress(e.target.value);
+            }}
+          />
+          <TextField
+            id="outlined-multiline-static"
+            label="Nhập số điện thoại"
+            multiline
+            rows={1}
+            sx={{ width: "100%", pb: "1rem" }}
+            size="small"
+            InputProps={{ inputComponent: TextareaAutosize }}
+            value={phoneNumber}
+            onChange={(e) => {
+              setPhoneNumber(e.target.value);
             }}
           />
           <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>
@@ -268,7 +286,7 @@ function CreateTask(props) {
               handleSaveTask();
             }}
           >
-            Thêm Thẻ
+            Thêm Việc
           </LoadingButton>
         </Box>
       </Collapse>

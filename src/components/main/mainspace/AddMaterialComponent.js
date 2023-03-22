@@ -53,7 +53,7 @@ function AddMaterialComponent(props) {
       <CardContent sx={{ width: "100%" }}>
         <TextField
           id="outlined-multiline-static"
-          label="Tên Nguyên Vật Liệu"
+          label="Tên nguyên vật liệu"
           multiline
           rows={1}
           value={materialName}

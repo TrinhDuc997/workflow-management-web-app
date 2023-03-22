@@ -29,11 +29,11 @@ function Login() {
     event.preventDefault();
   };
   // handle show password --- END
-  // localStorage.setItem("token", "");
 
   // handle restart token -- START
-
+  localStorage.setItem("token", "");
   // handle restart token -- END
+
   //handle Login --- START
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");

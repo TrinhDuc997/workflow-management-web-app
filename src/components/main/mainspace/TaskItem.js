@@ -19,6 +19,7 @@ import { MainContext } from "../../../contexts";
 import { tasksAPI } from "../../../api";
 import { LoadingButton } from "@mui/lab";
 import action from "../../../utils/actionCommon";
+import { socket } from "../../../socket";
 // Handle name user - START
 function stringToColor(string) {
   let hash = 0;
@@ -121,7 +122,7 @@ const TaskItem = forwardRef((props, ref) => {
       taskData: {
         ...detailTask,
         ...params,
-        assignedTo: assignedTo.id || null,
+        assignedTo: (assignedTo || {})._id || null,
       },
     });
     setIsSave(false);
@@ -129,6 +130,7 @@ const TaskItem = forwardRef((props, ref) => {
     if (saveData.RetCode === 1) {
       handleUpdate(saveData.task);
       // handle reset field --- end
+      socket.emit("task:update", saveData);
       setOpenMessage(true);
       setRetCode(1);
       handleCloseMenu();
@@ -148,6 +150,7 @@ const TaskItem = forwardRef((props, ref) => {
 
     if (dataDelete.RetCode === 1) {
       handleUpdateListAfterRemoveTask(dataDelete.deletedTask);
+      socket.emit("task:delete", dataDelete.deletedTask);
       // handle reset field --- end
       setOpenMessage(true);
       setRetCode(1);
@@ -179,7 +182,7 @@ const TaskItem = forwardRef((props, ref) => {
             item
             sx={{ p: "8px", textAlign: "right" }}
           >
-            <Box>
+            <Box display={"flex"} alignItems="center">
               {!!fullName && (
                 <Avatar
                   sx={{
@@ -190,6 +193,9 @@ const TaskItem = forwardRef((props, ref) => {
                   {stringAvatar(fullName)}
                 </Avatar>
               )}
+              <Typography ml={"5px"} variant="body1">
+                {fullName}
+              </Typography>
             </Box>
 
             {checkPermitEditTask && (
@@ -229,14 +235,14 @@ const TaskItem = forwardRef((props, ref) => {
                     {Number(unitPrice).toLocaleString()} VND
                   </Typography>
                 </Grid>
-                <Grid item container justifyContent={"space-between"}>
+                {/*<Grid item container justifyContent={"space-between"}>
                   <Tooltip title="Tổng tiền mua nguyên vật liệu">
                     <Typography variant="body1">Tiền NVL:</Typography>
                   </Tooltip>
                   <Typography variant="body1">
                     {Number(totalAmountMaterial).toLocaleString()} VND
                   </Typography>
-                </Grid>
+                </Grid>*/}
               </Grid>
             </Grid>
           </Grid>

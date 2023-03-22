@@ -7,7 +7,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import MuiAlert from "@mui/material/Alert";
 import React, { useContext, useRef } from "react";
 // import { Editor } from "react-draft-wysiwyg";
 // import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -18,10 +17,7 @@ import { MainContext } from "../../../contexts";
 import UpdateListMaterial from "./UpdateListMaterial";
 import { LoadingButton } from "@mui/lab";
 import action from "../../../utils/actionCommon";
-
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={1} ref={ref} variant="standard" {...props} />;
-});
+import { socket } from "../../../socket";
 
 const NumericFormatCustom = React.forwardRef(function NumericFormatCustom(
   props,
@@ -54,19 +50,22 @@ const UpdateTask = React.forwardRef((props, ref) => {
     setOpenMessage,
     setRetCode,
   } = props;
-  const { roles = [] } = JSON.parse(localStorage.getItem("dataUser") || "{}");
-  const checkPermitEditTask = action.checkPermission(roles, "edit_dashboard");
+  // const { roles = [] } = JSON.parse(localStorage.getItem("dataUser") || "{}");
+  // const checkPermitEditTask = action.checkPermission(roles, "edit_dashboard");
   const { materials = [], assignedTo: propsAssignedTo = null } = detailTask;
   const mainState = useContext(MainContext);
   const { selectedDate, listUser, handleUpdate } = mainState;
   const [taskName, setTaskName] = React.useState(detailTask.taskName || "");
   const [assignedTo, setAssignedTo] = React.useState(
-    !!(propsAssignedTo || {}).id ? propsAssignedTo : null
+    !!(propsAssignedTo || {})._id ? propsAssignedTo : null
   );
   const [description, setDescription] = React.useState(
     detailTask.description || ""
   );
   const [address, setAddress] = React.useState(detailTask.address || "");
+  const [phoneNumber, setPhoneNumber] = React.useState(
+    detailTask.phoneNumber || ""
+  );
   const [quantity, setQuantity] = React.useState(detailTask.quantity || "");
   const [unitPrice, setUnitPrice] = React.useState(detailTask.unitPrice || "");
   const [isSave, setIsSave] = React.useState(false);
@@ -84,9 +83,10 @@ const UpdateTask = React.forwardRef((props, ref) => {
     const task = {
       taskName,
       status: detailTask.status || "todo",
-      assignedTo: (assignedTo || {}).id || null,
+      assignedTo: (assignedTo || {})._id || null,
       description,
       address,
+      phoneNumber,
       quantity,
       unitPrice,
       createDate: selectedDate,
@@ -112,6 +112,7 @@ const UpdateTask = React.forwardRef((props, ref) => {
     });
     if (saveData.RetCode === 1) {
       handleUpdate(saveData.task);
+      socket.emit("task:update", saveData);
       // handle reset field --- end
       setOpenMessage(true);
       setRetCode(1);
@@ -185,7 +186,7 @@ const UpdateTask = React.forwardRef((props, ref) => {
           options={[...listUser]}
           getOptionLabel={(option) => option.fullName}
           isOptionEqualToValue={(option, value) =>
-            (option || {}).id === (value || {}).id
+            (option || {})._id === (value || {})._id
           }
           sx={{ mb: "1rem" }}
           renderInput={(params) => (
@@ -199,7 +200,7 @@ const UpdateTask = React.forwardRef((props, ref) => {
         />
         <TextField
           id="outlined-multiline-static"
-          label="Nhập Địa Chỉ"
+          label="Nhập địa chỉ của khách"
           multiline
           rows={1}
           sx={{ width: "100%", pb: "1rem" }}
@@ -208,6 +209,19 @@ const UpdateTask = React.forwardRef((props, ref) => {
           value={address}
           onChange={(e) => {
             setAddress(e.target.value);
+          }}
+        />
+        <TextField
+          id="outlined-multiline-static"
+          label="Nhập số điện thoại của khách"
+          multiline
+          rows={1}
+          sx={{ width: "100%", pb: "1rem" }}
+          size="small"
+          InputProps={{ inputComponent: TextareaAutosize }}
+          value={phoneNumber}
+          onChange={(e) => {
+            setPhoneNumber(e.target.value);
           }}
         />
         <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>
@@ -261,19 +275,17 @@ const UpdateTask = React.forwardRef((props, ref) => {
           zIndex: "999",
         }}
       >
-        {checkPermitEditTask && (
-          <LoadingButton
-            loading={isSave}
-            variant="contained"
-            disableElevation
-            sx={{ width: "80%" }}
-            onClick={() => {
-              handleSaveTask();
-            }}
-          >
-            Cập Nhật Thẻ
-          </LoadingButton>
-        )}
+        <LoadingButton
+          loading={isSave}
+          variant="contained"
+          disableElevation
+          sx={{ width: "80%" }}
+          onClick={() => {
+            handleSaveTask();
+          }}
+        >
+          Cập Nhật Thẻ
+        </LoadingButton>
       </Box>
     </Card>
   );

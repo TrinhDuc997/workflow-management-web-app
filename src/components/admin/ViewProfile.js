@@ -11,14 +11,20 @@ import {
   InputLabel,
   OutlinedInput,
   TextField,
+  Snackbar,
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
+import MuiAlert from "@mui/material/Alert";
 import React, { useRef, useState } from "react";
 import { usersAPI } from "../../api";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={1} ref={ref} variant="standard" {...props} />;
+});
 
 function ViewProfile() {
   const [profile, setProfile] = useState({});
@@ -27,6 +33,9 @@ function ViewProfile() {
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
   const [checkPassword, setCheckPassword] = React.useState(false);
+  const [openMessage, setOpenMessage] = React.useState(false);
+  const [retCode, setRetCode] = React.useState(1);
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -44,6 +53,13 @@ function ViewProfile() {
 
   const handleChangeProfile = (params = {}) => {
     setProfile({ ...profile, ...params });
+  };
+
+  const handleCloseMessage = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenMessage(false);
   };
 
   // componentDidMount - START
@@ -79,6 +95,8 @@ function ViewProfile() {
     } else {
       setLoading(true);
       const dataUpdated = await usersAPI.updateProfile({ newProfile });
+      setOpenMessage(true);
+      setRetCode(1);
       setLoading(false);
       setProfile(dataUpdated.newProfile || {});
     }
@@ -266,6 +284,23 @@ function ViewProfile() {
           Cập Nhật Thông Tin
         </LoadingButton>
       </Grid>
+      <Snackbar
+        open={openMessage}
+        autoHideDuration={5000}
+        onClose={handleCloseMessage}
+      >
+        <Alert
+          onClose={handleCloseMessage}
+          severity={retCode === 1 ? "success" : "error"}
+          sx={{
+            width: "250px",
+            border: "1px solid",
+            borderColor: retCode === 1 ? "green" : "red",
+          }}
+        >
+          {retCode === 1 ? "Save Success..." : "Save Error..."}
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 }

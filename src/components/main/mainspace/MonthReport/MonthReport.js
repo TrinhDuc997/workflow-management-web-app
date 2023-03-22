@@ -37,8 +37,8 @@ function MonthReport(props) {
                 <TableRow>
                   <TableCell />
                   <TableCell>Ngày</TableCell>
-                  <TableCell align="right">Tổng Công Việc</TableCell>
-                  <TableCell align="right">Tổng Tiền</TableCell>
+                  <TableCell align="right">Tổng công việc</TableCell>
+                  <TableCell align="right">Tổng tiền</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

@@ -55,7 +55,7 @@ const ListMaterial = React.forwardRef((props, ref) => {
   const handleRemoveMateial = (id) => {
     let newMaterial = [];
     materialLists.forEach((i) => {
-      if (i.id !== id) {
+      if (i._id !== id) {
         newMaterial.push(i);
       }
     });
@@ -64,7 +64,7 @@ const ListMaterial = React.forwardRef((props, ref) => {
   const handleEditMaterial = (params) => {
     let newMaterial = [];
     materialLists.forEach((i) => {
-      if (i.id === params.id) {
+      if (i._id === params._id) {
         newMaterial.push(params);
       } else {
         newMaterial.push(i);
@@ -100,7 +100,7 @@ const ListMaterial = React.forwardRef((props, ref) => {
       >
         <AddBoxOutlinedIcon />{" "}
         <Typography variant="subtitle2">
-          Thêm Danh Sách Nguyên Vật Liệu
+          Thêm danh sách nguyên vật liệu
         </Typography>
       </ButtonBase>
 
@@ -110,7 +110,7 @@ const ListMaterial = React.forwardRef((props, ref) => {
         {materialLists.map((item, index) => {
           return (
             <MaterialComponent
-              key={item.id}
+              key={item._id}
               index={index}
               handleRemoveMateial={handleRemoveMateial}
               handleEditMaterial={handleEditMaterial}

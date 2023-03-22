@@ -25,6 +25,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import styled from "@emotion/styled";
 import MonthReport from "../components/main/mainspace/MonthReport/MonthReport";
 import action from "../utils/actionCommon";
+import { socket } from "../socket";
 
 const drawerWidth = 300;
 const MainDrawer = styled("main", {
@@ -74,6 +75,36 @@ function Main(props) {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
+  const handleUpdate = (param = {}) => {
+    let newTaskList = [];
+    if (!!param._id) {
+      setTasksList((tasksList = []) => {
+        tasksList.forEach((element) => {
+          if (element._id === param._id) {
+            newTaskList.push(param);
+          } else {
+            newTaskList.push(element);
+          }
+        });
+        return newTaskList;
+      });
+    }
+  };
+  const handleAddTask = (params = []) => {
+    setTasksList((tasksList) => [...tasksList, ...params]);
+  };
+  const handleUpdateListAfterRemoveTask = (params = {}) => {
+    setTasksList((tasksList) => {
+      let newTaskList = [];
+      tasksList.forEach((element) => {
+        if (element._id !== params._id) {
+          newTaskList.push(element);
+        }
+      });
+      return newTaskList;
+    });
+  };
+
   // componentDidMount - START
   React.useEffect(() => {
     if (dataFetchedRef.current) return;
@@ -101,6 +132,23 @@ function Main(props) {
       });
     }
     //Add addEventListener for element <MainDrawer/> --- END
+
+    // Register listent event socket --- START
+    socket.on("task-updated", (params) => {
+      handleUpdate(params.task || {});
+    });
+    socket.on("task-created", (params) => {
+      handleAddTask(params);
+    });
+    socket.on("task-deleted", (params) => {
+      handleUpdateListAfterRemoveTask(params);
+    });
+    // Register listent event socket --- END
+
+    // return () => {
+    //   console.log("remove component");
+    //   socket.off("task-updated");
+    // };
   }, [selectedDate]);
 
   //componentDidMount - END
@@ -143,30 +191,7 @@ function Main(props) {
     fetchListTask().catch(console.error);
   };
   // handle change date --- END
-  const handleAddTask = (params = []) => {
-    setTasksList([...tasksList, ...params]);
-  };
 
-  const handleUpdate = (param = {}) => {
-    let newTaskList = [];
-    tasksList.forEach((element) => {
-      if (element._id === param._id) {
-        newTaskList.push(param);
-      } else {
-        newTaskList.push(element);
-      }
-    });
-    setTasksList(newTaskList);
-  };
-  const handleUpdateListAfterRemoveTask = (params = {}) => {
-    let newTaskList = [];
-    tasksList.forEach((element) => {
-      if (element._id !== params._id) {
-        newTaskList.push(element);
-      }
-    });
-    setTasksList(newTaskList);
-  };
   const mainState = {
     selectedDate,
     listUser,
@@ -334,7 +359,7 @@ function Main(props) {
                           fontWeight={"900"}
                           sx={{ display: { xs: "none", md: "block" } }}
                         >
-                          Tổng Tiền Trong Tháng:{" "}
+                          Tổng tiền trong tháng:{" "}
                           {Number(
                             totalAmountTask - TotalAmountMaterial
                           ).toLocaleString()}{" "}
@@ -346,7 +371,7 @@ function Main(props) {
                           fontWeight={"900"}
                           sx={{ display: { xs: "none", md: "block" } }}
                         >
-                          Tổng Tiền Trong Ngày:{" "}
+                          Tổng tiền trong ngày:{" "}
                           {Number(
                             totalAmountTask - TotalAmountMaterial
                           ).toLocaleString()}{" "}
@@ -372,11 +397,11 @@ function Main(props) {
                     >
                       <Box p={"1rem"}>
                         <Typography variant="subtitle1">
-                          Tổng Tiền Công Việc:{" "}
+                          Tổng tiền công việc:{" "}
                           {totalAmountTask.toLocaleString()} VND
                         </Typography>
                         <Typography variant="subtitle1">
-                          Tổng Tiền Nguyên Vật Liệu:{" "}
+                          Tổng tiền nguyên vật liệu:{" "}
                           {TotalAmountMaterial.toLocaleString()} VND
                         </Typography>
                         <Typography
@@ -384,7 +409,7 @@ function Main(props) {
                           fontWeight={"900"}
                           sx={{ display: { xs: "block", md: "none" } }}
                         >
-                          Tổng Tiền Trong Ngày:{" "}
+                          Tổng tiền trong ngày:{" "}
                           {Number(
                             totalAmountTask - TotalAmountMaterial
                           ).toLocaleString()}{" "}

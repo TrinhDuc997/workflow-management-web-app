@@ -32,7 +32,7 @@ const UpdateListMaterial = React.forwardRef((props = {}, ref) => {
   const handleEditMaterial = (params) => {
     let newMaterial = [];
     materialLists.forEach((i) => {
-      if (i.id === params.id) {
+      if (i._id === params._id) {
         newMaterial.push(params);
       } else {
         newMaterial.push(i);
@@ -68,7 +68,7 @@ const UpdateListMaterial = React.forwardRef((props = {}, ref) => {
       >
         <AddBoxOutlinedIcon />{" "}
         <Typography variant="subtitle2">
-          Thêm Danh Sách Nguyên Vật Liệu
+          Thêm danh sách nguyên vật liệu
         </Typography>
       </ButtonBase>
 

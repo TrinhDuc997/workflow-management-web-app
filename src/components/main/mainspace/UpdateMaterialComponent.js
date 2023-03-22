@@ -19,7 +19,7 @@ const ViewMaterial = ({
   setEditMode,
   handleRemoveMateial,
 }) => {
-  const { materialName, quantity, unitPrice, id } = dataMaterial;
+  const { materialName, quantity, unitPrice, _id } = dataMaterial;
   return (
     <CardContent sx={{ p: "0px" }}>
       <Paper>
@@ -80,7 +80,7 @@ const ViewMaterial = ({
                   borderRadius: "5px",
                 }}
                 onClick={() => {
-                  handleRemoveMateial(id);
+                  handleRemoveMateial(_id);
                 }}
               >
                 <DisabledByDefaultRoundedIcon
@@ -116,7 +116,7 @@ const EditMaterial = (props) => {
       <CardContent sx={{ width: "100%" }}>
         <TextField
           id="outlined-multiline-static"
-          label="Tên Nguyên Vật Liệu"
+          label="Tên nguyên vật liệu"
           multiline
           rows={1}
           sx={{ width: "100%", pb: "2px" }}
