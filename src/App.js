@@ -63,10 +63,6 @@ function App() {
   React.useEffect(() => {
     if (dataFetchedRef.current) return;
     dataFetchedRef.current = true;
-    // const socket = io(process.env.REACT_APP_API_URL, {
-    //   reconnectionAttempts: 5,
-    //   secure: true,
-    // });
     socket.on("connect", () => {
       console.log("Connected to server!");
     });
