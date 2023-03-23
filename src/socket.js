@@ -5,5 +5,6 @@ const URL = process.env.REACT_APP_API_URL;
 
 export const socket = io(URL, {
   reconnectionAttempts: 5,
-  //   reconnection: false,
+  reconnection: false,
+  reconnectionDelay: 5000,
 });
