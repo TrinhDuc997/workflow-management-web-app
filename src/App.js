@@ -12,6 +12,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { getDesignTokens } from "./utils/theme";
 import theme from "./utils/theme";
 import io from "socket.io-client";
+import { socket } from "./socket";
 // import { GlobalStyles } from "@mui/styled-engine";
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
@@ -60,12 +61,12 @@ function App() {
 
   // ComponentDidMount --- START
   React.useEffect(() => {
-    // if (dataFetchedRef.current) return;
-    // dataFetchedRef.current = true;
-    const socket = io(process.env.REACT_APP_API_URL, {
-      reconnectionAttempts: 5,
-      secure: true,
-    });
+    if (dataFetchedRef.current) return;
+    dataFetchedRef.current = true;
+    // const socket = io(process.env.REACT_APP_API_URL, {
+    //   reconnectionAttempts: 5,
+    //   secure: true,
+    // });
     socket.on("connect", () => {
       console.log("Connected to server!");
     });

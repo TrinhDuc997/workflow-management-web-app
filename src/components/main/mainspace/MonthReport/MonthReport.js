@@ -9,16 +9,11 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
-import { tasksAPI } from "../../../../api";
+import React from "react";
 import DayReport from "./DayReport";
 
 function MonthReport(props) {
   const { listTaskAccordingMonth = [] } = props || {};
-  console.log(
-    "🚀 ~ file: MonthReport.js:17 ~ MonthReport ~ listTaskAccordingMonth:",
-    listTaskAccordingMonth
-  );
   let keyDataTask = [];
   for (const key in listTaskAccordingMonth) {
     keyDataTask.push(key);

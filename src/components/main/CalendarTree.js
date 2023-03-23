@@ -53,7 +53,6 @@ function CalendarTree(props) {
   };
 
   const handleSelect = (event, nodeIds) => {
-    console.log("🚀 ~ file: CalendarTree.js:55 ~ handleSelect ~ event:", event);
     if (event.target.nodeName !== "path" && event.target.nodeName !== "svg") {
       setSelected(nodeIds);
       const checkNodeSelectedIsMonth = (nodeIds[0] || "").length === 6; // if equal 6 then it's the month, otherwise it's the day

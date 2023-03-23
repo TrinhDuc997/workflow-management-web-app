@@ -7,7 +7,7 @@ import {
   Popover,
   Typography,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 // import theme from "../utils/theme";
 import { useTheme } from "@mui/material/styles";
 // import IconButton from "@mui/material/IconButton";
@@ -172,7 +172,7 @@ function Main(props) {
     };
     fetchListTask().catch(console.error);
   };
-  const handleChangeDateToGetReportMonth = (month = "") => {
+  const handleChangeDateToGetReportMonth = useCallback((month = "") => {
     const fetchListTask = async () => {
       const params = {
         monthSelected: month,
@@ -189,7 +189,7 @@ function Main(props) {
       setSelectedIsMonth(true);
     };
     fetchListTask().catch(console.error);
-  };
+  });
   // handle change date --- END
 
   const mainState = {
