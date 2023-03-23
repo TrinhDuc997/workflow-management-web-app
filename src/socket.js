@@ -7,5 +7,5 @@ export const socket = io(URL, {
   reconnectionAttempts: 5,
   reconnection: false,
   reconnectionDelay: 5000,
-  path: "/socket.io/",
+  timeout: 60000,
 });
